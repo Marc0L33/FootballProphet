@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+output/predictions/*
+!output/predictions/.gitkeep
+.DS_Store
+.env

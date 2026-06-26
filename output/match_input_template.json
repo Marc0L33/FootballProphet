@@ -1,0 +1,75 @@
+{
+  "_comment": "=== Prophet v1.0.0 Match Input Template ===",
+  "_usage": "Claude fills in this template after searching for data, then runs: python engine/predictor.py --input this_file.json",
+
+  "match_id": "optional_int",
+  "home_team": "TeamName (must match data/teams.json key)",
+  "away_team": "TeamName (must match data/teams.json key)",
+
+  "home": {
+    "_comment": "Context for the home team",
+    "tournament_matches": [
+      {"gf": 0, "ga": 0}
+    ],
+    "locked_group_winner": false,
+    "already_qualified": false,
+    "rotation_count": 0,
+    "key_player_missing": [
+      {"player": "Name", "tier": "core_playmaker | main_striker | multiple_absence | fullback_not_core"}
+    ],
+    "defense_is_elite": false,
+    "attacking_tier": 3,
+    "consecutive_zero_openplay": 0,
+    "cumulative_xg": 0,
+    "xg_per_shot": 0.10,
+    "system_maturity": false,
+    "previous_red_card": false,
+    "actual_goals": 0
+  },
+
+  "away": {
+    "_comment": "Same fields as home, for the away team",
+    "tournament_matches": [],
+    "locked_group_winner": false,
+    "already_qualified": false,
+    "rotation_count": 0,
+    "key_player_missing": [],
+    "defense_is_elite": false,
+    "attacking_tier": 3,
+    "consecutive_zero_openplay": 0,
+    "cumulative_xg": 0,
+    "xg_per_shot": 0.10,
+    "system_maturity": false,
+    "previous_red_card": false,
+    "actual_goals": 0
+  },
+
+  "match": {
+    "_comment": "Match-level context. tactical_matchup requires qualitative judgment.",
+    "tactical_matchup": {
+      "home_advantage": "overwhelming | clear_advantage | significant_advantage | slight_advantage | even | outmatched",
+      "away_advantage": "overwhelming | clear_advantage | significant_advantage | slight_advantage | even | outmatched"
+    },
+    "draw_both_advance": false,
+    "venue_is_indoor": false,
+    "venue_is_climate_controlled": false,
+    "has_mandatory_water_break": false,
+    "suspension_minutes": 0,
+    "early_goal_likely": false,
+    "attendance_tilt": "none"
+  },
+
+  "market": {
+    "_comment": "Optional. Populate from betting odds search. Leave empty {} if no market data.",
+    "moneyline": {"home": 0, "draw": 0, "away": 0},
+    "handicap": "",
+    "totals": "",
+    "signals": [
+      {
+        "type": "adjust_home | adjust_away | adjust_total",
+        "delta": 0,
+        "reason": "Explanation of the market signal"
+      }
+    ]
+  }
+}

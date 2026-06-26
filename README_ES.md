@@ -6,7 +6,7 @@ Un motor de predicción de resultados de fútbol basado en reglas con **salida d
 
 Aplica a: **Mundial, torneos continentales, ligas domésticas (Premier League, La Liga, etc.), copas (Champions League, FA Cup, etc.)** — mismo flujo de trabajo, diferentes fuentes de datos.
 
-> Precisión direccional objetivo ~80%, puntuación exacta ~40%. Metodología calibrada en más de 60 partidos del Mundial 2026.
+> Precisión direccional objetivo ~70%, puntuación exacta ~20%. Metodología calibrada en más de 60 partidos del Mundial 2026.
 
 ## Inicio Rápido
 

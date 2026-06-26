@@ -6,7 +6,7 @@ A rule-based football score prediction engine with **dual-score output**: pure m
 
 Applies to: **World Cup, continental tournaments, domestic leagues (Premier League, La Liga, etc.), cups (Champions League, FA Cup, etc.)** — same workflow, different data sources.
 
-> Directional accuracy target ~80%, exact score ~40%. Methodology calibrated across 60+ matches from the 2026 World Cup.
+> Directional accuracy target ~70%, exact score ~20%. Methodology calibrated across 60+ matches from the 2026 World Cup.
 
 ## Quick Start
 

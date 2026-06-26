@@ -6,7 +6,7 @@ Um motor de previsão de resultados de futebol baseado em regras com **saída de
 
 Aplica-se a: **Copa do Mundo, torneios continentais, ligas nacionais (Premier League, La Liga, etc.), copas (Champions League, FA Cup, etc.)** — mesmo fluxo de trabalho, fontes de dados diferentes.
 
-> Precisão direcional alvo ~80%, placar exato ~40%. Metodologia calibrada em mais de 60 partidas da Copa de 2026.
+> Precisão direcional alvo ~70%, placar exato ~20%. Metodologia calibrada em mais de 60 partidas da Copa de 2026.
 
 ## Início Rápido
 

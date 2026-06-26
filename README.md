@@ -1,15 +1,17 @@
-# Prophet v1.0.0 — 足球比分预测引擎
+# Prophet v1.0.0 — Football Match Prediction Engine
 
-基于规则的足球比赛比分预测引擎，支持**纯方法论输出**和**市场信号修正**双比分输出。
+> [:cn: 中文](README_CN.md) · [:es: Español](README_ES.md) · [:brazil: Português](README_PT.md) · [:jp: 日本語](README_JA.md) · [:th: ไทย](README_TH.md) · [:ru: Русский](README_RU.md) · [:sa: العربية](README_AR.md)
 
-适用赛事：**世界杯、洲际杯、联赛（英超/西甲等）、杯赛（欧冠/足总杯等）**——流程相同，仅数据源不同。
+A rule-based football score prediction engine with **dual-score output**: pure methodology and market-adjusted.
 
-> 方向准确率目标 ~80%，精确比分准确率 ~40%。方法论基于 60+ 场 2026 世界杯回测校准。
+Applies to: **World Cup, continental tournaments, domestic leagues (Premier League, La Liga, etc.), cups (Champions League, FA Cup, etc.)** — same workflow, different data sources.
 
-## 快速开始
+> Directional accuracy target ~80%, exact score ~40%. Methodology calibrated across 60+ matches from the 2026 World Cup.
+
+## Quick Start
 
 ```bash
-# 1. 准备输入文件 (JSON)
+# 1. Prepare an input file (JSON)
 cat > match.json << 'EOF'
 {
   "home_team": "Spain",
@@ -32,10 +34,10 @@ cat > match.json << 'EOF'
 }
 EOF
 
-# 2. 运行预测
+# 2. Run the engine
 python engine/predictor.py --input match.json
 
-# 3. 输出
+# 3. Output
 # ============================================================
 # Prophet v1.0.0 — Spain vs Uruguay
 # ============================================================
@@ -44,142 +46,164 @@ python engine/predictor.py --input match.json
 #    Confidence:         ⭐⭐⭐⭐ high
 ```
 
-## 安装
+## Installation
 
 ```bash
 git clone https://github.com/yourusername/prophet.git
 cd prophet
-# 依赖: 仅 Python 3.8+ 标准库
+# Dependencies: Python 3.8+ standard library only. No pip install needed.
 python engine/predictor.py --input test/egypt_iran.json
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 prophet/
-├── README.md                     # 本文件
-├── SKILL.md                      # Claude Code skill 入口
-├── rules.md                      # 人类可读的规则文档
-├── bayesian.md                   # 贝叶斯方法论说明
-├── ledger.md                     # 历史赛果账本
+├── README.md                     # This file (English, default)
+├── README_CN.md                  # 中文 · Chinese
+├── README_ES.md                  # Español · Spanish
+├── README_PT.md                  # Português · Portuguese
+├── README_JA.md                  # 日本語 · Japanese
+├── README_TH.md                  # ไทย · Thai
+├── README_RU.md                  # Русский · Russian
+├── README_AR.md                  # العربية · Arabic
+├── SKILL.md                      # Claude Code skill entry point
+├── rules.md                      # Human-readable rule documentation
+├── bayesian.md                   # Bayesian methodology
+├── ledger.md                     # Historical match ledger
 ├── data/
-│   ├── rules.json                # 规则定义 (19条, 引擎读取)
-│   └── teams.json                # 48队预选赛数据
+│   ├── rules.json                # Rule definitions (19 rules, engine reads this)
+│   └── teams.json                # Team baseline GF/GA data
 ├── engine/
-│   ├── predictor.py              # 核心预测引擎
-│   ├── bayesian.py               # 贝叶斯参数更新
-│   └── backtest.py               # 批量回测工具
+│   ├── predictor.py              # Core prediction engine
+│   ├── bayesian.py               # Bayesian parameter updater
+│   └── backtest.py               # Batch backtesting tool
 ├── test/
-│   └── egypt_iran.json           # 示例输入
+│   ├── egypt_iran.json           # Example input
+│   └── spain_uruguay.json        # Full-rule test input
 └── output/
-    └── predictions/              # 预测输出
+    ├── match_input_template.json  # Input template for Claude/humans
+    └── predictions/               # Prediction output directory
 ```
 
-## 两个比分
+## Two Scores, Two Purposes
 
-引擎输出**两个比分**，各有不同用途：
+The engine outputs **two scores** with distinct roles:
 
-| | 方法论比分 | 市场修正比分 |
+| | Methodology Score | Market-Adjusted Score |
 |---|---|---|
-| **来源** | 纯公式计算 | 公式 + 市场信号 |
-| **输入** | 预选赛 GF/GA + 规则 δ | + 赔率、水位、市场情绪 |
-| **确定性** | ✅ 可复现 | ❌ 需定性判断 |
-| **用途** | 基准线，检测方法论偏差 | 实战参考 |
+| **Source** | Pure formula computation | Formula + market signals |
+| **Inputs** | Qualifying GF/GA + rule δ values | Left column + odds, water levels, sentiment |
+| **Reproducibility** | ✅ Deterministic | ❌ Requires qualitative judgment |
+| **Usage** | Baseline; detect methodology drift | Practical reference |
 
-当两个比分分歧较大时，说明市场知道方法论不知道的信息（伤停、战意、默契球）——此时应优先信任市场修正比分。
+When the two scores diverge, the market knows something the methodology doesn't — injuries, morale, collusion — and the market-adjusted score should be preferred.
 
-## 预测公式
-
-```
-进球_A = ⑭基线_GF × ②对手系数 + Σ(触发规则_i × γ_i × δ_i)
-进球_B = 同上，对称计算
-最终比分 = (round(进球_A), round(进球_B))
-```
-
-## 规则系统
-
-19 条规则按优先级链排序，每条规则有四个生命周期状态：
+## Prediction Formula
 
 ```
-影子准入(🆕) → 活跃(🔵) → 影子降级(⚠️) → 退出(❌)
+Goals_A = r14_baseline_GF × r02_opponent_coeff + Σ(triggered_rules_i × γ_i × δ_i)
+Goals_B = same computation, symmetrically
+Final Score = (round(Goals_A), round(Goals_B))
 ```
 
-| # | 规则 | E[γ] | δ | 状态 |
-|---|------|------|-----|------|
-| ⑤ | 结构性进攻无能 | 0.89 | -1.5 | 🔵 cap硬上限 |
-| ⑩ | 开场进球 | 0.64 | +1.4 | 🔵 |
-| ⑭ | 预选赛基准 | 0.78 | per team | 🔵 混合GF/GA |
-| ⑫ | 战术对位 | 0.79 | ±0.5~1.5 | 🔵 |
-| ⑯ | 战意衰减 | 0.55 | -1.5/-1.0 | 🔵 v1.0.0 激活 |
-| ⑰ | 跨洲校准 | 0.50 | ×1.20 | 🆕 |
-| ⑮ | 室内/恒温 | 0.50 | +0.25 | 🆕 |
-| ⑱ | 补水暂停 | 0.50 | +0.15/+0.25 | 🆕 |
-| ⑲ | 平局博弈 | 0.80 | -1.0(全局) | 🔵 v1.0.0 激活 |
-| ⑬ | 极端天气 | 0.71 | -0.5 | 🔵 |
-| ⑪ | GK超神≠防守 | 0.69 | — | 🔵 |
-| ⑨ | 门将不可预测 | 0.75 | — | 🔵 |
-| ⑧ | 精英防线 | 0.75 | -1.0 | 🔵 |
-| ⑦ | 创造力缺阵 | 0.69 | -0.3~-1.2 | 🔵 |
-| ⑥ | 数据污染 | 0.77 | 按级别 | 🔵 含鱼腩清洗 |
-| ④ | 红牌风险 | 0.50 | +0.3 | ⚠️ 影子降级 |
-| ② | 对手质量系数 | 0.69 | 0.60x~1.40x | 🔵 |
-| ③ | 主场优势 | 0.70 | +0.4/+0.25 | 🔵 |
-| ① | 不预测零封 | 0.72 | +0.5 | 🔵 |
+## Rule System
 
-完整规则文档见 [rules.md](rules.md)，贝叶斯方法论见 [bayesian.md](bayesian.md)。
+Nineteen rules in priority-chain order. Each rule has a four-state lifecycle:
 
-## Claude Code 集成
+```
+Shadow Admission (🆕) → Active (🔵) → Shadow Demoted (⚠️) → Deleted (❌)
+```
 
-本项目同时是 Claude Code 的 **prophet skill**。Claude 负责：
+| # | Rule | E[γ] | δ | Status |
+|---|------|------|-----|--------|
+| ⑤ | Offensive Incapability | 0.89 | -1.5 | 🔵 hard cap |
+| ⑩ | Early Goal | 0.64 | +1.4 | 🔵 |
+| ⑭ | Qualifying Baseline | 0.78 | per team | 🔵 blended GF/GA |
+| ⑫ | Tactical Matchup | 0.79 | ±0.5~1.5 | 🔵 |
+| ⑯ | Morale Decay | 0.55 | -1.5/-1.0 | 🔵 v1.0.0 activated |
+| ⑰ | Cross-Confederation Calibration | 0.50 | ×1.20 | 🆕 |
+| ⑮ | Indoor/Climate-Controlled | 0.50 | +0.25 | 🆕 |
+| ⑱ | Mandatory Water Break | 0.50 | +0.15/+0.25 | 🆕 |
+| ⑲ | Draw Collusion Detection | 0.80 | -1.0(global) | 🔵 v1.0.0 activated |
+| ⑬ | Extreme Weather | 0.71 | -0.5 | 🔵 |
+| ⑪ | GK Heroics ≠ Defense | 0.69 | — | 🔵 |
+| ⑨ | GK Unpredictability | 0.75 | — | 🔵 boundary |
+| ⑧ | Elite Defense | 0.75 | -1.0 | 🔵 |
+| ⑦ | Creativity Absence | 0.69 | -0.3~-1.2 | 🔵 |
+| ⑥ | Data Pollution | 0.77 | per level | 🔵 incl. minnow wash |
+| ④ | Red Card Risk | 0.50 | +0.3 | ⚠️ shadow-demoted |
+| ② | Opponent Quality Coefficient | 0.69 | 0.60x~1.40x | 🔵 |
+| ③ | Home Advantage | 0.70 | +0.4/+0.25 | 🔵 |
+| ① | No Clean Sheet Prediction | 0.72 | +0.5 | 🔵 |
 
-1. **搜索**：预选赛数据、伤停、xG、盘口
-2. **定性判断**：⑥ 数据污染、⑦ 伤停影响、⑫ 战术对位、⑲ 平局博弈
-3. **填写 JSON**：将搜索结果填入 `match.json`
-4. **运行引擎**：`python engine/predictor.py -i match.json`
-5. **解释输出**：将引擎输出翻译为自然语言预测报告
+Full documentation: [rules.md](rules.md). Bayesian methodology: [bayesian.md](bayesian.md).
 
-详见 [SKILL.md](SKILL.md)。
+## Claude Code Integration
 
-## 贝叶斯更新
+This project also functions as a **Claude Code skill**. Claude handles:
 
-赛后使用 `bayesian.py` 更新规则参数：
+1. **Search**: qualifying data, injuries, xG, betting lines
+2. **Qualitative judgment**: ⑥ data pollution, ⑦ injury impact, ⑫ tactical matchup, ⑲ collusion
+3. **Fill the JSON**: populate `match.json` from search results
+4. **Run the engine**: `python engine/predictor.py -i match.json`
+5. **Interpret output**: translate JSON into a natural-language prediction report
+
+The engine handles all deterministic computation. Claude handles search and judgment — each doing what it does best.
+
+See [SKILL.md](SKILL.md) for the full Claude workflow.
+
+## Bayesian Updating
+
+After each match, update rule parameters with a single command:
 
 ```bash
 python engine/bayesian.py --result match_result.json --rules data/rules.json
 ```
 
-输入格式见 [test/egypt_iran.json](test/egypt_iran.json) 中的 `rule_reviews` 部分。每条触发规则的 α/β/n 自动更新，E[γ] 重新计算，规则生命周期自动检查。
+Each triggered rule's α/β/n counters update automatically, E[γ] recalculates via posterior mean, and rule lifecycle changes (promotion/demotion/exit) are checked automatically.
 
-## 回测
+## Backtesting
 
 ```bash
 python engine/backtest.py --matches backtest_matches.json
 ```
 
-支持 JSON 数组或 JSONL 格式。输出方向准确率、精确比分率、分轮次统计。
+Accepts JSON array or JSONL format. Outputs directional accuracy, exact-score rate, and per-round statistics.
 
-## 数据源
+## Data Sources (by Competition)
 
-引擎本身不含数据——数据由使用者（人或 Claude）搜索后填入输入 JSON。不同赛事的数据源不同：
+The engine itself contains no data — data is provided by the user (human or Claude) via input JSON. Different competitions require different data sources:
 
-| 赛事类型 | ⑭ "预选赛"等效数据 | 正赛数据 | 示例数据源 |
-|---------|-------------------|---------|----------|
-| **世界杯** | 预选赛 GF/GA | 小组赛已赛场次 | FIFA.com, FBref |
-| **洲际杯** | 预选赛 + 近期热身赛 | 正赛已赛场次 | UEFA.com, CONMEBOL |
-| **联赛** | 本赛季前 N 轮 GF/GA | 最近 5 轮 | WhoScored, Understat |
-| **杯赛** | 国内联赛赛季数据 | 杯赛已赛轮次 | Soccerway, Transfermarkt |
-| **欧冠** | 小组赛 + 国内联赛 | 淘汰赛已赛回合 | UEFA.com, Opta |
+| Competition | "Qualifying" Equivalent (⑭) | Tournament Data | Example Sources |
+|------------|---------------------------|-----------------|-----------------|
+| **World Cup** | Qualifying GF/GA | Group stage matches played | FIFA.com, FBref |
+| **Continental Cup** | Qualifying + friendlies GF/GA | Tournament matches played | UEFA.com, CONMEBOL |
+| **Domestic League** | **Season average GF/GA** | Last 5 rounds + home/away split | WhoScored, Understat, Soccerway |
+| **Domestic Cup** | League season data | Cup rounds played | Transfermarkt, FBref |
+| **Champions League** | Group stage GF/GA + domestic league | Knockout rounds played | UEFA.com, Opta |
 
-`data/teams.json` 当前存有 2026 世界杯 48 队数据——联赛/杯赛使用时需替换为对应赛事数据。
+`data/teams.json` currently holds 2026 World Cup data — swap in competition-specific data for league/cup predictions.
 
-## 许可证
+## Engine vs. Claude: Division of Labor
+
+| | Engine (Python) | Claude |
+|---|---|---|
+| Compute `GF × coeff + Σ(γ×δ)` | ✅ | — |
+| Search for injury news | — | ✅ |
+| Detect data pollution (⑥) | — | ✅ |
+| Apply rule lifecycle state machine | ✅ | — |
+| Run 60-match backtest in 10 seconds | ✅ | — |
+| Interpret "odds +147, U2.0 heavy" | — | ✅ |
+
+## License
 
 MIT
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 PR，特别是：
-- 新规则提案（附带回测数据）
-- 预选赛数据更新
-- 系数校准优化
-- Claude Code skill 工作流改进
+Issues and PRs welcome, especially for:
+- New rule proposals (with backtest data)
+- Team data updates for new competitions
+- Coefficient calibration improvements
+- Claude Code skill workflow enhancements

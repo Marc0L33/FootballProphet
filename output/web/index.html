@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prophet — 比赛预测</title>
+<style>
+  :root {
+    --bg: #F9F8F6;
+    --card: #FFFFFF;
+    --border: #E8E6E1;
+    --text: #1A1A18;
+    --muted: #706E6A;
+    --accent: #D97757;
+    --accent-dim: rgba(217,119,87,0.12);
+    --home: #C25A3C;
+    --away: #4A6FA5;
+    --home-bar: rgba(194,90,60,0.18);
+    --away-bar: rgba(74,111,165,0.18);
+    --highest-bar: rgba(217,119,87,0.35);
+    --shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 48px 20px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { width:100%; max-width:720px; }
+
+  /* ── Header ── */
+  .header {
+    display: flex; align-items:center; justify-content:space-between;
+    margin-bottom: 32px;
+  }
+  .logo { font-size:13px; font-weight:600; color:var(--text); letter-spacing:-0.01em; }
+  .logo span { color:var(--muted); font-weight:400; margin-left:4px; }
+
+  /* ── Nav bar ── */
+  .nav-bar {
+    display: flex; align-items:center; justify-content:center; gap:16px;
+    margin-bottom: 16px; user-select:none;
+  }
+  .nav-btn {
+    width:36px; height:36px; border:1px solid var(--border);
+    background:var(--card); border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:var(--text); transition:all .15s;
+  }
+  .nav-btn:hover { background: var(--bg); border-color: var(--accent); }
+  .nav-btn:disabled { opacity:0.3; cursor:default; }
+  .nav-btn:disabled:hover { border-color:var(--border); background:var(--card); }
+  .nav-info {
+    font-size:13px; color:var(--muted); font-weight:500;
+    min-width:60px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  .nav-upload {
+    font-size:11px; padding:6px 14px; border:1px dashed var(--border);
+    border-radius:6px; cursor:pointer; color:var(--muted);
+    background:var(--card); transition:all .15s;
+    font-family:inherit;
+  }
+  .nav-upload:hover { border-color:var(--accent); color:var(--accent); }
+  #file-upload { display:none; }
+
+  /* ── Match Card ── */
+  .match-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:40px 36px; margin-bottom:20px;
+    box-shadow: var(--shadow);
+  }
+  .match-title {
+    text-align:center; font-size:26px; font-weight:700;
+    letter-spacing:-0.02em; color:var(--text); line-height:1.3;
+  }
+  .match-title .vs { color:var(--muted); margin:0 14px; font-weight:400; }
+  .score-line { text-align:center; margin-top:10px; }
+  .score-num {
+    font-size:36px; font-weight:800; letter-spacing:-0.03em;
+    font-variant-numeric:tabular-nums; color:var(--text);
+  }
+  .score-label { font-size:14px; color:var(--muted); margin-left:6px; }
+
+  /* ── Meta row ── */
+  .meta {
+    display:flex; justify-content:center; gap:28px;
+    margin-top:18px; font-size:12px; color:var(--muted);
+  }
+  .meta .stars { color:var(--accent); letter-spacing:0.08em; }
+  .meta .lam { font-family:'SF Mono','Cascadia Code','Consolas',monospace; font-size:11px; }
+
+  /* ── Rules ── */
+  .rules {
+    display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px;
+  }
+  .rule {
+    font-size:10px; padding:3px 9px; background:var(--accent-dim);
+    border-radius:4px; color:var(--accent); font-weight:500; letter-spacing:0.02em;
+  }
+
+  /* ── Distributions ── */
+  .dist-section { margin-top:28px; }
+  .dist-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  }
+  @media (max-width:600px) { .dist-grid { grid-template-columns:1fr; } }
+
+  .dist-col {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:10px; padding:28px 24px; box-shadow:var(--shadow);
+  }
+  .dist-col-name {
+    font-size:15px; font-weight:700; color:var(--text); letter-spacing:-0.01em;
+    margin-bottom:3px;
+  }
+  .dist-col-lam {
+    font-size:11px; color:var(--muted); font-family:'SF Mono','Cascadia Code','Consolas',monospace;
+    margin-bottom:16px;
+  }
+  .dist-row {
+    display:grid; grid-template-columns:34px 1fr 46px;
+    align-items:center; gap:10px; padding:6px 0;
+  }
+  .dist-row-label {
+    font-size:12px; color:var(--muted); text-align:right; font-weight:500;
+  }
+  .dist-row-label.high { color:var(--accent); font-weight:700; }
+  .dist-row-track { height:22px; background:var(--bg); border-radius:4px; overflow:hidden; }
+  .dist-row-fill { height:100%; border-radius:4px; transition:width .7s ease; }
+  .fill-home { background:var(--home-bar); }
+  .fill-away { background:var(--away-bar); }
+  .fill-highest { background:var(--highest-bar); }
+  .dist-row-pct { font-size:12px; font-weight:600; color:var(--text); text-align:right; font-variant-numeric:tabular-nums; }
+
+  /* ── Joint ── */
+  .joint-section { margin-top:20px; }
+  .joint-bar {
+    display:flex; height:40px; border-radius:8px; overflow:hidden;
+    background:var(--bg); border:1px solid var(--border);
+  }
+  .joint-seg {
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:600; letter-spacing:-0.01em; transition:flex .5s ease;
+  }
+  .joint-seg.h { background:rgba(194,90,60,0.15); color:var(--home); }
+  .joint-seg.d { background:rgba(112,110,106,0.12); color:var(--muted); }
+  .joint-seg.a { background:rgba(74,111,165,0.15); color:var(--away); }
+
+  /* ── Adjustments ── */
+  .adj {
+    margin-top:16px; padding:14px 18px; background:var(--accent-dim);
+    border-left:3px solid var(--accent); border-radius:0 6px 6px 0;
+    font-size:12px; color:var(--muted); line-height:1.6;
+  }
+
+  /* ── Empty ── */
+  .empty {
+    text-align:center; padding:80px 20px; background:var(--card);
+    border:1px solid var(--border); border-radius:12px;
+  }
+  .empty h2 { font-size:17px; font-weight:600; color:var(--text); margin-bottom:6px; letter-spacing:-0.01em; }
+  .empty p { font-size:13px; color:var(--muted); max-width:360px; margin:0 auto 20px; line-height:1.6; }
+  .empty p code { font-family:'SF Mono','Cascadia Code','Consolas',monospace; font-size:11px; color:var(--accent); background:var(--accent-dim); padding:1px 5px; border-radius:3px; }
+  .file-btn {
+    display:inline-block; padding:9px 22px; background:var(--text); color:#fff;
+    border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;
+    font-family:inherit; letter-spacing:-0.01em; transition:background .2s;
+  }
+  .file-btn:hover { background:#2D2D2B; }
+
+  /* ── Lang switch ── */
+  .lang-switch {
+    cursor:pointer; font-size:12px; font-weight:500; color:var(--muted);
+    padding:4px 10px; border:1px solid var(--border); border-radius:4px;
+    user-select:none; transition:background .15s;
+  }
+  .lang-switch:hover { background:var(--bg); }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div class="container" id="app">
+  <div class="header">
+    <div class="logo">Prophet <span id="logo-sub"></span></div>
+    <div class="lang-switch" onclick="toggleLang()" id="lang-btn"></div>
+  </div>
+
+  <!-- Nav bar: always visible when matches loaded -->
+  <div class="nav-bar" id="nav-bar" style="display:none;">
+    <button class="nav-btn" id="nav-prev" onclick="prevMatch()" title="上一场">&larr;</button>
+    <span class="nav-info" id="nav-info">—</span>
+    <button class="nav-btn" id="nav-next" onclick="nextMatch()" title="下一场">&rarr;</button>
+    <label class="nav-upload" for="file-upload" id="nav-upload-btn">+ 上传</label>
+    <button class="nav-btn" id="nav-screenshot" onclick="saveScreenshot()" title="保存图片" style="font-size:14px;">📷</button>
+  </div>
+
+  <!-- Placeholder for empty state OR match card -->
+  <div id="content-area">
+    <div class="empty" id="empty-state">
+      <h2 id="empty-title"></h2>
+      <p id="empty-desc"></p>
+      <label class="file-btn" for="file-upload" id="empty-btn"></label>
+      <input type="file" id="file-upload" accept=".json" multiple>
+    </div>
+    <div id="result" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// ── State ──
+let matches = [];       // parsed prediction JSONs, sorted by match_id
+let currentIdx = -1;
+
+// ── i18n ──
+const I18N = {
+  zh: {
+    logo:'预测引擎', dir_home:'主胜', dir_away:'客胜', dir_draw:'平局',
+    confidence:'信度', goals:'球',
+    drop_title:'拖入预测 JSON 文件',
+    drop_desc:'运行 <code>python engine/predictor.py --out-dir</code> 后，将输出的 JSON 文件批量拖入此处。',
+    select_file:'选择文件（可多选）',
+    adj_label:'市场调整',
+    score_ref:'参考比分',
+    nav_upload:'+ 上传',
+  },
+  en: {
+    logo:'Prediction Engine', dir_home:'Home', dir_away:'Away', dir_draw:'Draw',
+    confidence:'Confidence', goals:'',
+    drop_title:'Drop prediction JSON files',
+    drop_desc:'Run <code>python engine/predictor.py --out-dir</code> and drop the output JSON files here.',
+    select_file:'Select Files',
+    adj_label:'Market Adjustments',
+    score_ref:'Score',
+    nav_upload:'+ Upload',
+  }
+};
+let LANG = (navigator.language||'').startsWith('zh') ? 'zh' : 'en';
+function t(key) { return I18N[LANG][key]||key; }
+function tgoal(n) { return LANG==='zh' ? n+'球' : n; }
+
+document.documentElement.lang = LANG==='zh'?'zh-CN':'en';
+document.title = LANG==='zh' ? 'Prophet — 比赛预测' : 'Prophet — Match Prediction';
+
+const FLAGS = {
+  'Spain':'🇪🇸','Uruguay':'🇺🇾','France':'🇫🇷','Norway':'🇳🇴','Germany':'🇩🇪','Argentina':'🇦🇷',
+  'Brazil':'🇧🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Netherlands':'🇳🇱','Portugal':'🇵🇹','Belgium':'🇧🇪','Croatia':'🇭🇷',
+  'Italy':'🇮🇹','Mexico':'🇲🇽','USA':'🇺🇸','Canada':'🇨🇦','Japan':'🇯🇵','South Korea':'🇰🇷',
+  'Australia':'🇦🇺','Iran':'🇮🇷','Saudi Arabia':'🇸🇦','Qatar':'🇶🇦','Iraq':'🇮🇶','Jordan':'🇯🇴',
+  'Uzbekistan':'🇺🇿','Senegal':'🇸🇳','Morocco':'🇲🇦','Tunisia':'🇹🇳','Algeria':'🇩🇿','Egypt':'🇪🇬',
+  'Ghana':'🇬🇭','Ivory Coast':'🇨🇮','DR Congo':'🇨🇩','South Africa':'🇿🇦','Cape Verde':'🇨🇻',
+  'Cameroon':'🇨🇲','Nigeria':'🇳🇬','Ecuador':'🇪🇨','Colombia':'🇨🇴','Paraguay':'🇵🇾','Chile':'🇨🇱',
+  'Peru':'🇵🇪','Sweden':'🇸🇪','Denmark':'🇩🇰','Switzerland':'🇨🇭','Austria':'🇦🇹',
+  'Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Czechia':'🇨🇿','Turkey':'🇹🇷','Poland':'🇵🇱','Serbia':'🇷🇸','Ukraine':'🇺🇦',
+  'Wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿','Greece':'🇬🇷','Romania':'🇷🇴','Slovakia':'🇸🇰','Hungary':'🇭🇺',
+  'Ireland':'🇮🇪','Finland':'🇫🇮','Bosnia':'🇧🇦','Curacao':'🇨🇼','Panama':'🇵🇦','Costa Rica':'🇨🇷',
+  'Haiti':'🇭🇹','New Zealand':'🇳🇿','Jamaica':'🇯🇲',
+};
+
+const CN = {
+  'Spain':'西班牙','Uruguay':'乌拉圭','France':'法国','Norway':'挪威','Germany':'德国',
+  'Argentina':'阿根廷','Brazil':'巴西','England':'英格兰','Netherlands':'荷兰','Portugal':'葡萄牙',
+  'Belgium':'比利时','Croatia':'克罗地亚','Mexico':'墨西哥','USA':'美国','Canada':'加拿大',
+  'Japan':'日本','South Korea':'韩国','Australia':'澳大利亚','Iran':'伊朗','Saudi Arabia':'沙特',
+  'Qatar':'卡塔尔','Iraq':'伊拉克','Jordan':'约旦','Uzbekistan':'乌兹别克','Senegal':'塞内加尔',
+  'Morocco':'摩洛哥','Tunisia':'突尼斯','Algeria':'阿尔及利亚','Egypt':'埃及','Ghana':'加纳',
+  'Ivory Coast':'科特迪瓦','DR Congo':'刚果(金)','South Africa':'南非','Cape Verde':'佛得角',
+  'Ecuador':'厄瓜多尔','Colombia':'哥伦比亚','Paraguay':'巴拉圭','Sweden':'瑞典',
+  'Switzerland':'瑞士','Austria':'奥地利','Scotland':'苏格兰','Czechia':'捷克','Turkey':'土耳其',
+  'Bosnia':'波黑','Curacao':'库拉索','Panama':'巴拿马','Haiti':'海地','New Zealand':'新西兰',
+};
+
+function label(name) {
+  return `${FLAGS[name]||''} ${LANG==='zh'?(CN[name]||name):name}`;
+}
+
+function renderDist(pmf, side) {
+  const entries = [];
+  if (pmf["0"] >= 0.80) {
+    entries.push({l:tgoal(0),p:pmf["0"],hi:true});
+    entries.push({l:LANG==='zh'?'1+球':'1+',p:Math.round((1-pmf["0"])*1e4)/1e4,hi:false});
+  } else {
+    for (const k of ["0","1","2","3","4","5","6+"]) {
+      entries.push({l:tgoal(k),p:pmf[k],hi:k==="0"});
+    }
+  }
+  const maxP = Math.max(...entries.map(e=>e.p));
+  const topIdx = entries.reduce((b,e,i)=>e.p>entries[b].p?i:b,0);
+  return entries.map((e,i)=>{
+    const cls = i===topIdx?'fill-highest':(side==='home'?'fill-home':'fill-away');
+    const lc = e.hi?'high':'';
+    return `<div class="dist-row">
+      <span class="dist-row-label ${lc}">${e.l}</span>
+      <div class="dist-row-track"><div class="dist-row-fill ${cls}" style="width:${Math.max(2,(e.p/maxP)*100)}%"></div></div>
+      <span class="dist-row-pct">${(e.p*100).toFixed(0)}%</span>
+    </div>`;
+  }).join('');
+}
+
+function renderOne(data) {
+  const [hn,an] = (data.match||"A vs B").split(" vs ");
+  const mk = data.market_adjusted_score||{};
+  const confData = (data.confidence||{}).rating||{};
+  const conf = typeof confData==='string' ? confData : `${confData.stars||''} ${confData[LANG]||confData.en||confData}`;
+  const rules = data.rule_application||{};
+  const mkt = (data.distributions||{}).market_adjusted||{};
+  const jt = mkt.joint||{};
+  const adj = data.market_adjustments||[];
+  const RULE_LABELS = {
+    r05_offensive_incapability:{zh:'⑤ 进攻无能',en:'⑤ Offensive Incapability'},
+    r10_early_goal:{zh:'⑩ 开场进球',en:'⑩ Early Goal'},
+    r14_qualifying_baseline:{zh:'⑭ 预选基准',en:'⑭ Qualifying Baseline'},
+    r12_tactical_matchup:{zh:'⑫ 战术对位',en:'⑫ Tactical Matchup'},
+    r16_morale_decay:{zh:'⑯ 战意衰减',en:'⑯ Morale Decay'},
+    r17_cross_conf:{zh:'⑰ 跨洲校准',en:'⑰ Cross-Conf'},
+    r15_indoor:{zh:'⑮ 室内场馆',en:'⑮ Indoor'},
+    r18_water_break:{zh:'⑱ 补水暂停',en:'⑱ Water Break'},
+    r19_draw_collusion:{zh:'⑲ 平局博弈',en:'⑲ Collusion'},
+    r13_extreme_weather:{zh:'⑬ 极端天气',en:'⑬ Weather'},
+    r11_gk_not_defense:{zh:'⑪ GK≠防守',en:'⑪ GK≠Defense'},
+    r09_gk_unpredictable:{zh:'⑨ GK不可测',en:'⑨ GK Unpredictable'},
+    r08_elite_defense:{zh:'⑧ 精英防线',en:'⑧ Elite Defense'},
+    r07_creativity_absence:{zh:'⑦ 创造力缺阵',en:'⑦ Creativity Absence'},
+    r06_data_pollution:{zh:'⑥ 数据污染',en:'⑥ Data Pollution'},
+    r04_red_card:{zh:'④ 红牌风险',en:'④ Red Card Risk'},
+    r02_opponent_quality:{zh:'② 对手系数',en:'② Opponent Coeff'},
+    r03_home_advantage:{zh:'③ 主场优势',en:'③ Home Advantage'},
+    r01_no_clean_sheet:{zh:'① 不预测零封',en:'① No Clean Sheet'},
+  };
+  const allRules = [
+    ...(rules.home?.triggered_rules||[]).map(r=>{
+      const lbl = RULE_LABELS[r]||{zh:r,en:r};
+      return `<span class="rule" title="${lbl.en}">${lbl[LANG]||lbl.zh||r}</span>`;
+    }),
+    ...(rules.away?.triggered_rules||[]).map(r=>{
+      const lbl = RULE_LABELS[r]||{zh:r,en:r};
+      return `<span class="rule" title="${lbl.en}">${lbl[LANG]||lbl.zh||r}</span>`;
+    }),
+  ];
+  const dir = mk.direction==='home'?t('dir_home'):mk.direction==='away'?t('dir_away'):t('dir_draw');
+
+  return `
+    <div class="match-card">
+      <div class="match-title">${label(hn)} <span class="vs">vs</span> ${label(an)}</div>
+      <div class="score-line">
+        <span class="score-num">${mk.home} – ${mk.away}</span>
+        <span class="score-label">${t('score_ref')} · ${dir}</span>
+      </div>
+      <div class="meta">
+        <span>${t('confidence')} <span class="stars">${conf}</span></span>
+        <span class="lam">λ<sub>H</sub> ${mkt.home?.lambda?.toFixed(2)||'—'}</span>
+        <span class="lam">λ<sub>A</sub> ${mkt.away?.lambda?.toFixed(2)||'—'}</span>
+      </div>
+      ${allRules.length?`<div class="rules">${allRules.join('')}</div>`:''}
+    </div>
+
+    <div class="dist-section">
+      <div class="dist-grid">
+        <div class="dist-col">
+          <div class="dist-col-name">${label(hn)}</div>
+          <div class="dist-col-lam">λ=${mkt.home?.lambda?.toFixed(2)||'—'}  σ=${mkt.home?.sigma?.toFixed(2)||'—'}</div>
+          ${renderDist(mkt.home?.pmf||{},'home')}
+        </div>
+        <div class="dist-col">
+          <div class="dist-col-name">${label(an)}</div>
+          <div class="dist-col-lam">λ=${mkt.away?.lambda?.toFixed(2)||'—'}  σ=${mkt.away?.sigma?.toFixed(2)||'—'}</div>
+          ${renderDist(mkt.away?.pmf||{},'away')}
+        </div>
+      </div>
+    </div>
+
+    <div class="joint-section">
+      <div class="joint-bar">
+        <div class="joint-seg h" style="flex:${jt.home_win||0}">${LANG==='zh'?'主':'H'} ${((jt.home_win||0)*100).toFixed(0)}%</div>
+        <div class="joint-seg d" style="flex:${jt.draw||0}">${LANG==='zh'?'平':'D'} ${((jt.draw||0)*100).toFixed(0)}%</div>
+        <div class="joint-seg a" style="flex:${jt.away_win||0}">${LANG==='zh'?'客':'A'} ${((jt.away_win||0)*100).toFixed(0)}%</div>
+      </div>
+    </div>
+
+    ${adj.length?`<div class="adj"><strong>${t('adj_label')}</strong><br>${adj.join('<br>')}</div>`:''}
+  `;
+}
+
+function showMatch(idx) {
+  if (idx < 0 || idx >= matches.length) return;
+  currentIdx = idx;
+
+  $('#empty-state').style.display = 'none';
+  $('#result').style.display = 'block';
+  $('#result').innerHTML = renderOne(matches[idx]);
+  updateNav();
+
+  // Animate bars
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      $$('.dist-row-fill').forEach(b=>{
+        const w=b.style.width;b.style.width='0%';
+        requestAnimationFrame(()=>{b.style.width=w;});
+      });
+    });
+  });
+}
+
+function updateNav() {
+  const n = matches.length;
+  if (n === 0) {
+    $('#nav-bar').style.display = 'none';
+    return;
+  }
+  $('#nav-bar').style.display = 'flex';
+  $('#nav-info').textContent = `${currentIdx + 1} / ${n}`;
+  $('#nav-prev').disabled = currentIdx <= 0;
+  $('#nav-next').disabled = currentIdx >= n - 1;
+
+  // Store raw for lang toggle
+  if (currentIdx >= 0) {
+    const data = matches[currentIdx];
+    $('#result').dataset.home = (data.match||'A vs B').split(' vs ')[0];
+    $('#result').dataset.away = (data.match||'A vs B').split(' vs ')[1];
+    $('#result').dataset.raw = JSON.stringify(data);
+  }
+}
+
+function prevMatch() { if (currentIdx > 0) showMatch(currentIdx - 1); }
+function nextMatch() { if (currentIdx < matches.length - 1) showMatch(currentIdx + 1); }
+
+// ── File loading ──
+function loadFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.name.endsWith('.json'));
+  if (!files.length) return;
+
+  let loaded = 0;
+  const results = new Array(files.length);
+
+  files.forEach((f, i) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        results[i] = JSON.parse(reader.result);
+      } catch(e) {
+        console.warn(`Failed to parse ${f.name}: ${e.message}`);
+        results[i] = null;
+      }
+      loaded++;
+      if (loaded === files.length) {
+        // Sort by match_id descending (newest first) then by filename
+        const valid = results.filter(r => r && r.match);
+        valid.sort((a, b) => {
+          const idA = a.market_signals?.match_id || a.rule_application?.home?.baseline_gf || 0;
+          const idB = b.market_signals?.match_id || b.rule_application?.home?.baseline_gf || 0;
+          return idB - idA;  // descending
+        });
+        if (valid.length) {
+          matches = valid;
+          showMatch(0);
+        }
+      }
+    };
+    reader.readAsText(f);
+  });
+}
+
+// ── Event listeners ──
+$('#file-upload').addEventListener('change', e => {
+  if (e.target.files.length) loadFiles(e.target.files);
+  e.target.value = '';  // allow re-upload of same files
+});
+
+document.body.addEventListener('dragover', e => { e.preventDefault(); });
+document.body.addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
+});
+
+// Screenshot
+async function saveScreenshot() {
+  const btn = $('#nav-screenshot');
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  try {
+    const el = $('#result');
+    const canvas = await html2canvas(el, {
+      backgroundColor: '#F9F8F6',
+      scale: 2,
+      useCORS: true,
+    });
+    const [hn, an] = (matches[currentIdx].match || 'match').split(' vs ');
+    const name = `${hn}_vs_${an}.png`.replace(/\s+/g, '_');
+    const a = document.createElement('a');
+    a.download = name;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  } catch(e) {
+    alert('截图失败: ' + e.message);
+  } finally {
+    btn.textContent = '📷';
+    btn.disabled = false;
+  }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevMatch(); }
+  if (e.key === 'ArrowRight') { e.preventDefault(); nextMatch(); }
+  if (e.key === 's' && e.ctrlKey) { e.preventDefault(); saveScreenshot(); }
+});
+
+// ── Init ──
+function initUI() {
+  document.documentElement.lang = LANG==='zh'?'zh-CN':'en';
+  document.title = LANG==='zh' ? 'Prophet — 比赛预测' : 'Prophet — Match Prediction';
+  $('#lang-btn').textContent = LANG==='zh'?'EN':'中文';
+  $('#logo-sub').textContent = t('logo');
+  $('#empty-title').innerHTML = t('drop_title');
+  $('#empty-desc').innerHTML = t('drop_desc');
+  $('#empty-btn').textContent = t('select_file');
+  $('#nav-upload-btn').textContent = t('nav_upload');
+}
+
+function toggleLang(){
+  LANG = LANG==='zh'?'en':'zh';
+  initUI();
+  if (currentIdx >= 0 && matches.length > 0) {
+    showMatch(currentIdx);
+  }
+}
+initUI();
+
+// ── Auto-load: try loading all *_output.json from same directory ──
+(async function autoLoad() {
+  // Try a small manifest of known files in this directory
+  const KNOWN = [
+    'md3_L1_panama_england_output.json',
+    'md3_L2_croatia_ghana_output.json',
+    'md3_K1_colombia_portugal_output.json',
+    'md3_K2_drcongo_uzbekistan_output.json',
+    'md3_J1_jordan_argentina_output.json',
+    'md3_J2_algeria_austria_output.json',
+  ];
+  const loaded = [];
+  for (const fn of KNOWN) {
+    try {
+      const r = await fetch(fn);
+      if (r.ok) loaded.push(await r.json());
+    } catch(_) { /* file not available */ }
+  }
+  if (loaded.length) {
+    matches = loaded;
+    showMatch(0);
+  }
+})();
+</script>
+</body>
+</html>

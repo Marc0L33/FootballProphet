@@ -4,3 +4,12 @@ output/predictions/*
 !output/predictions/.gitkeep
 .DS_Store
 .env
+output/web/md3_J1_jordan_argentina_output.json
+.gitignore
+output/web/md3_J2_algeria_austria_output.json
+.gitignore
+output/web/md3_K1_colombia_portugal_output.json
+.gitignore
+output/web/md3_K2_drcongo_uzbekistan_output.json
+output/web/md3_L1_panama_england_output.json
+output/web/md3_L2_croatia_ghana_output.json

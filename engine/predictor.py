@@ -23,6 +23,7 @@ import json
 import argparse
 import sys
 import os
+import math
 from typing import Dict, List, Tuple, Optional, Any
 
 # Paths
@@ -31,6 +32,147 @@ PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 RULES_PATH = os.path.join(DATA_DIR, "rules.json")
 TEAMS_PATH = os.path.join(DATA_DIR, "teams.json")
+
+
+class GoalDistribution:
+    """Negative Binomial goal distribution for a single team.
+
+    Converts pre-round λ (expected goals) and σ (variance) into
+    a probability mass function for 0~6+ goals.
+
+    When σ² ≤ λ: falls back to Poisson (NB r→∞ limit)."""
+
+    def __init__(self, lam: float, sigma: float):
+        self.lam = max(0.01, lam)
+        self.sigma = max(0.01, sigma)
+        self._compute()
+
+    def _compute(self):
+        var = self.sigma ** 2
+        if var > self.lam:
+            # Negative Binomial: r = λ²/(σ²-λ), p = r/(r+λ)
+            self.r = self.lam ** 2 / (var - self.lam)
+            self.p = self.r / (self.r + self.lam)
+            self._model = "negbin"
+        else:
+            # Poisson fallback
+            self.r = float('inf')
+            self.p = 0.0
+            self._model = "poisson"
+
+        # PMF for 0..5, then 6+
+        self.pmf = {}
+        cum = 0.0
+        for k in range(6):
+            if self._model == "negbin":
+                prob = self._nb_pmf(k)
+            else:
+                prob = self._poisson_pmf(k)
+            self.pmf[str(k)] = round(prob, 4)
+            cum += prob
+        self.pmf["6+"] = round(max(0, 1.0 - cum), 4)
+
+        # 5% scoring floor: P(0) capped at 95%, excess → 1球 (80%) + 2球 (15%) + 3球 (5%)
+        # Real football: teams that barely score, when they do, it's almost always exactly 1.
+        if self.pmf["0"] > 0.95:
+            self.pmf["0"] = 0.95
+            self.pmf["1"] = 0.04
+            self.pmf["2"] = 0.01
+            self.pmf["3"] = 0.0
+            self.pmf["4"] = 0.0
+            self.pmf["5"] = 0.0
+            self.pmf["6+"] = 0.0
+
+        # Right-tail compression: P(6+) capped at 5%, excess redistributed to 1-5
+        if self.pmf["6+"] > 0.05:
+            excess = self.pmf["6+"] - 0.05
+            self.pmf["6+"] = 0.05
+            total_body = sum(self.pmf[str(k)] for k in range(1, 6))
+            if total_body > 0:
+                for k in ["1","2","3","4","5"]:
+                    self.pmf[k] = round(self.pmf[k] + excess * self.pmf[k] / total_body, 4)
+
+    def _nb_pmf(self, k: int) -> float:
+        """Negative Binomial PMF with parameters r (success count), p (success prob)."""
+        from math import lgamma
+        r, p = self.r, self.p
+        return math.exp(
+            lgamma(k + r) - lgamma(k + 1) - lgamma(r)
+            + r * math.log(p) + k * math.log(1 - p)
+        )
+
+    def _poisson_pmf(self, k: int) -> float:
+        return math.exp(-self.lam) * (self.lam ** k) / math.factorial(k)
+
+    def to_table(self) -> str:
+        """Render as a compact text bar chart."""
+        bars = []
+        max_p = max(self.pmf.values())
+        labels = {"0": "0球", "1": "1球", "2": "2球", "3": "3球",
+                  "4": "4球", "5": "5球", "6+": "6+"}
+        for k in ["0","1","2","3","4","5","6+"]:
+            p = self.pmf[k]
+            bar_len = int(p / max_p * 18) if max_p > 0 else 0
+            bar = "█" * bar_len
+            bars.append(f"  {labels[k]:<4} {bar:<18} {p*100:5.1f}%")
+        return "\n".join(bars)
+
+
+class JointDistribution:
+    """Bivariate goal distribution with negative correlation.
+
+    Uses a simple total-goals split model:
+    1. Compute total goals distribution (home λ + away λ + covariance)
+    2. Split each total by relative strength ratio ρ = λ_h / (λ_h + λ_a)
+    3. This naturally produces negative correlation: when one team
+       scores more, the other tends to score less."""
+
+    def __init__(self, home_lam: float, away_lam: float,
+                 home_sigma: float, away_sigma: float):
+        self.h_lam = max(0.01, home_lam)
+        self.a_lam = max(0.01, away_lam)
+        total_lam = self.h_lam + self.a_lam
+        # Pooled sigma: sqrt(σh² + σa² - 2*ρ*σh*σa) with ρ≈-0.15
+        rho = -0.15
+        total_var = home_sigma**2 + away_sigma**2 - 2 * rho * home_sigma * away_sigma
+        total_sigma = math.sqrt(max(0.1, total_var))
+        self.total_dist = GoalDistribution(total_lam, total_sigma)
+        self.ratio = self.h_lam / total_lam if total_lam > 0 else 0.5
+
+    def score_prob(self, h_goals: int, a_goals: int) -> float:
+        """Probability of exact (h_goals, a_goals) using total-split model."""
+        total = h_goals + a_goals
+        # P(total) from total distribution
+        if total < 6:
+            p_total = self.total_dist.pmf[str(total)]
+        else:
+            # For total >= 6, allocate the tail evenly
+            p_total = self.total_dist.pmf["6+"] / 10  # rough approximation
+
+        # P(h_goals | total) from ratio split ~ Binomial(total, ratio)
+        from math import comb
+        p_h_given_t = comb(total, h_goals) * (self.ratio ** h_goals) * ((1 - self.ratio) ** a_goals)
+
+        return p_total * p_h_given_t
+
+    def direction_probs(self) -> Dict[str, float]:
+        """Compute P(home win), P(draw), P(away win) by enumerating joint space."""
+        h_win, draw, a_win = 0.0, 0.0, 0.0
+        for h in range(10):
+            for a in range(10):
+                prob = self.score_prob(h, a)
+                if h > a:
+                    h_win += prob
+                elif h == a:
+                    draw += prob
+                else:
+                    a_win += prob
+        total = h_win + draw + a_win
+        return {
+            "home_win": round(h_win / total, 3) if total > 0 else 0.0,
+            "draw": round(draw / total, 3) if total > 0 else 0.0,
+            "away_win": round(a_win / total, 3) if total > 0 else 0.0,
+        }
 
 
 class ProphetEngine:
@@ -98,6 +240,16 @@ class ProphetEngine:
         opp_coeff = self.opponent_coefficient(opp_ga)
         team_data = self.teams.get(team_name, {})
 
+        # Data quality: ⚠️ estimated teams get 1.3x variance, hosts 1.5x
+        data_note = team_data.get("_note", "")
+        is_host = side.get("is_host", team_data.get("is_host", False))
+        if is_host and side.get("is_host", True):
+            data_quality = 1.5
+        elif "⚠️" in data_note:
+            data_quality = 1.3
+        else:
+            data_quality = 1.0
+
         return {
             "team_name": team_name,
             "baseline_gf": baseline_gf,
@@ -121,6 +273,7 @@ class ProphetEngine:
             "xg_per_shot": side.get("xg_per_shot", 0.10),
             "actual_goals": side.get("actual_goals", 0),
             "system_maturity": side.get("system_maturity", False),
+            "_data_quality": data_quality,
             "triggered_rules": [],
             "rule_details": []
         }
@@ -368,8 +521,94 @@ class ProphetEngine:
                 }
             },
             "market_signals": market,
-            "market_adjustments": market_adjustments
+            "market_adjustments": market_adjustments,
+            "distributions": self._compute_distributions(
+                h_ctx, a_ctx, methodology_home, methodology_away,
+                market_home, market_away
+            )
         }
+
+    def _compute_distributions(self, h_ctx, a_ctx,
+                                mh, ma, mkt_h, mkt_a) -> Dict:
+        """Generate Negative Binomial distributions and joint probabilities."""
+        # Methodology lambdas and sigmas
+        h_lam = h_ctx["goals"]  # pre-round value
+        a_lam = a_ctx["goals"]
+
+        # Sigma: pooled from triggered rules' sigmas + baseline
+        h_sigma = self._pooled_sigma(h_ctx, mh)
+        a_sigma = self._pooled_sigma(a_ctx, ma)
+
+        mkt_h_lam = max(0.01, h_lam + (mkt_h - mh))  # shift λ by market delta
+        mkt_a_lam = max(0.01, a_lam + (mkt_a - ma))
+
+        m_dist = GoalDistribution(h_lam, h_sigma)
+        a_dist = GoalDistribution(a_lam, a_sigma)
+        joint = JointDistribution(h_lam, a_lam, h_sigma, a_sigma)
+
+        mkt_h_dist = GoalDistribution(mkt_h_lam, h_sigma)
+        mkt_a_dist = GoalDistribution(mkt_a_lam, a_sigma)
+        mkt_joint = JointDistribution(mkt_h_lam, mkt_a_lam, h_sigma, a_sigma)
+
+        dirs = joint.direction_probs()
+        mkt_dirs = mkt_joint.direction_probs()
+
+        return {
+            "methodology": {
+                "home": {
+                    "lambda": round(h_lam, 2),
+                    "sigma": round(h_sigma, 2),
+                    "model": m_dist._model,
+                    "pmf": m_dist.pmf,
+                },
+                "away": {
+                    "lambda": round(a_lam, 2),
+                    "sigma": round(a_sigma, 2),
+                    "model": a_dist._model,
+                    "pmf": a_dist.pmf,
+                },
+                "joint": {
+                    "home_win": dirs["home_win"],
+                    "draw": dirs["draw"],
+                    "away_win": dirs["away_win"],
+                }
+            },
+            "market_adjusted": {
+                "home": {
+                    "lambda": round(mkt_h_lam, 2),
+                    "sigma": round(h_sigma, 2),
+                    "model": m_dist._model,
+                    "pmf": mkt_h_dist.pmf,
+                },
+                "away": {
+                    "lambda": round(mkt_a_lam, 2),
+                    "sigma": round(a_sigma, 2),
+                    "model": a_dist._model,
+                    "pmf": mkt_a_dist.pmf,
+                },
+                "joint": {
+                    "home_win": mkt_dirs["home_win"],
+                    "draw": mkt_dirs["draw"],
+                    "away_win": mkt_dirs["away_win"],
+                }
+            }
+        }
+
+    def _pooled_sigma(self, ctx, rounded_goals) -> float:
+        """Pool sigma from triggered rules + baseline residual + data quality penalty."""
+        rules = self.rules
+        total_var = 0.5  # baseline variance (λ ≈ σ² from Poisson)
+        for rid in ctx["triggered_rules"]:
+            if rid in rules and rules[rid].get("sigma"):
+                total_var += rules[rid]["sigma"] ** 2
+        raw = ctx["goals"]
+        total_var += (raw - rounded_goals) ** 2
+
+        # Data quality penalty: ⚠️ estimated teams get +30% variance, hosts +50%
+        quality = ctx.get("_data_quality", 1.0)
+        total_var *= quality
+
+        return math.sqrt(max(0.1, total_var))
 
     def _apply_market_signals(self, mh: int, ma: int,
                                h_ctx: Dict, a_ctx: Dict,
@@ -462,11 +701,11 @@ class ProphetEngine:
         net = net_h + net_a
 
         if net >= 2 and core_rules_gamma > 0.75 and interval_width < 2.0:
-            rating = "⭐⭐⭐⭐ high"
+            rating = {"stars": "⭐⭐⭐", "zh": "高", "en": "high"}
         elif net >= 0 and (core_rules_gamma > 0.60 or interval_width < 3.0):
-            rating = "⭐⭐⭐ medium"
+            rating = {"stars": "⭐⭐", "zh": "中", "en": "medium"}
         else:
-            rating = "⭐⭐ low"
+            rating = {"stars": "⭐", "zh": "低", "en": "low"}
 
         return {
             "rating": rating,
@@ -486,11 +725,44 @@ class ProphetEngine:
 
 def main():
     parser = argparse.ArgumentParser(description="Prophet v1.0.0 Prediction Engine")
-    parser.add_argument("--input", "-i", required=True, help="Match input JSON file")
+    parser.add_argument("--input", "-i", help="Match input JSON file (or directory with --out-dir)")
     parser.add_argument("--output", "-o", help="Output JSON file (default: stdout)")
+    parser.add_argument("--out-dir", "-d", help="Batch mode: process all .json in INPUT dir, save to OUTPUT dir")
     parser.add_argument("--json", action="store_true", help="Output raw JSON only")
 
     args = parser.parse_args()
+
+    if args.out_dir:
+        # Batch mode: process all .json files in input directory
+        input_dir = args.input or "."
+        out_dir = args.out_dir
+        os.makedirs(out_dir, exist_ok=True)
+        engine = ProphetEngine()
+
+        files = sorted([f for f in os.listdir(input_dir) if f.endswith(".json")])
+        if not files:
+            print(f"No .json files found in {input_dir}")
+            return
+
+        for fname in files:
+            in_path = os.path.join(input_dir, fname)
+            with open(in_path) as f:
+                match_input = json.load(f)
+
+            result = engine.predict(match_input)
+            json_output = json.dumps(result, indent=2, ensure_ascii=False)
+
+            out_name = fname.replace(".json", "_output.json")
+            out_path = os.path.join(out_dir, out_name)
+            with open(out_path, "w") as f:
+                f.write(json_output)
+            print(f"[{result['match']}] → {out_path}")
+
+        print(f"\nDone. {len(files)} predictions saved to {out_dir}/")
+        return
+
+    if not args.input:
+        parser.error("--input/-i is required (or use --out-dir for batch mode)")
 
     with open(args.input) as f:
         match_input = json.load(f)
@@ -509,22 +781,63 @@ def main():
         if args.json:
             print(json_output)
         else:
-            # Human-readable output
-            print(f"\n{'='*60}")
-            print(f"Prophet v1.0.0 — {result['match']}")
-            print(f"{'='*60}")
-            print(f"\n   Methodology Score:  {result['methodology_score']['home']} - {result['methodology_score']['away']} ({result['methodology_score']['direction']})")
-            print(f"   Market-Adjusted:    {result['market_adjusted_score']['home']} - {result['market_adjusted_score']['away']} ({result['market_adjusted_score']['direction']})")
-            print(f"   Confidence:         {result['confidence']['rating']}")
-            print(f"\n   Rules triggered:")
-            for side, label in [("home", "Home"), ("away", "Away")]:
-                rules = result["rule_application"][side]["triggered_rules"]
-                if rules:
-                    print(f"     {label}: {', '.join(rules)}")
+            # Human-readable output — market-adjusted distributions only
+            match_name = result['match']
+            home_name, away_name = match_name.split(" vs ")
+            mkt_dist = result["distributions"]["market_adjusted"]
+            mkt_joint = mkt_dist["joint"]
+            mk = result["market_adjusted_score"]
+
+            print(f"\n{'='*70}")
+            print(f"  Prophet v1.0.0 — {match_name}")
+            print(f"{'='*70}")
+
+            print(f"\n  参考比分: {mk['home']}-{mk['away']} ({mk['direction']})  |  信度: {result['confidence']['rating']}")
+
+            # Rules
+            h_rules = result["rule_application"]["home"]["triggered_rules"]
+            a_rules = result["rule_application"]["away"]["triggered_rules"]
+            if h_rules or a_rules:
+                parts = []
+                if h_rules: parts.append(f"主: {','.join(h_rules)}")
+                if a_rules: parts.append(f"客: {','.join(a_rules)}")
+                print(f"  触发规则:  {'; '.join(parts)}")
+
+            # Market-adjusted distribution table — collapse weak sides
+            def side_rows(pmf):
+                """Return list of (label, prob) rows. Collapse 1..6+→'1+球' if P(0)≥80%."""
+                if pmf["0"] >= 0.80:
+                    return [("0球", pmf["0"]), ("1+球", round(1.0 - pmf["0"], 4))]
+                else:
+                    return [(f"{k}球", pmf[k]) for k in ["0","1","2","3","4","5","6+"]]
+
+            h_rows = side_rows(mkt_dist["home"]["pmf"])
+            a_rows = side_rows(mkt_dist["away"]["pmf"])
+            max_rows = max(len(h_rows), len(a_rows))
+            while len(h_rows) < max_rows: h_rows.append(("", 0.0))
+            while len(a_rows) < max_rows: a_rows.append(("", 0.0))
+
+            print(f"\n  ╔{'═'*25}╦{'═'*25}╗")
+            print(f"  ║ {home_name:^23} ║ {away_name:^23} ║")
+            print(f"  ╠{'═'*25}╬{'═'*25}╣")
+            for (hl, hp), (al, ap) in zip(h_rows, a_rows):
+                if hl == "" and al == "": continue
+                h_bar = "█" * max(1, int(hp * 40)) if hl else ""
+                a_bar = "█" * max(1, int(ap * 40)) if al else ""
+                h_cell = f"{hl:>4} {h_bar:<18} {hp*100:>4.0f}%" if hl else ""
+                a_cell = f"{al:>4} {a_bar:<18} {ap*100:>4.0f}%" if al else ""
+                print(f"  ║ {h_cell:<23} ║ {a_cell:<23} ║")
+            print(f"  ╚{'═'*25}╩{'═'*25}╝")
+            mth_sigmas = result["distributions"]["methodology"]
+            print(f"  λ={mkt_dist['home']['lambda']:.2f} σ={mth_sigmas['home']['sigma']:.2f} {'':>13} λ={mkt_dist['away']['lambda']:.2f} σ={mth_sigmas['away']['sigma']:.2f}")
+
+            # Joint probabilities
+            print(f"\n  方向概率: 主胜 {mkt_joint['home_win']*100:.0f}%  平 {mkt_joint['draw']*100:.0f}%  客胜 {mkt_joint['away_win']*100:.0f}%")
+
+            # Market adjustments
             if result["market_adjustments"]:
-                print(f"\n   Market adjustments:")
-                for adj in result["market_adjustments"]:
-                    print(f"     - {adj}")
+                print(f"  市场调整: {'; '.join(result['market_adjustments'])}")
+
             print()
 
 

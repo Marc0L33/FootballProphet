@@ -1,0 +1,155 @@
+{
+  "match": "Colombia vs Portugal",
+  "methodology_score": {
+    "home": 2,
+    "away": 2,
+    "direction": "draw",
+    "total": 4
+  },
+  "market_adjusted_score": {
+    "home": 1,
+    "away": 1,
+    "direction": "draw",
+    "total": 2
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐⭐",
+      "zh": "中",
+      "en": "medium"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": 0,
+      "away_net_effect": 1,
+      "total_net": 1,
+      "conflict_level": "slight"
+    },
+    "dimension_c_interval": {
+      "width": 1.05,
+      "level": "narrow"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 1.69,
+      "opponent_coefficient": 1.0,
+      "triggered_rules": [],
+      "rule_details": [],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 2.16,
+      "opponent_coefficient": 0.9,
+      "triggered_rules": [
+        "r12_tactical_matchup"
+      ],
+      "rule_details": [
+        "r12 tactical slight_advantage +0.40"
+      ],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 3.5,
+      "draw": 3.25,
+      "away": 2.0
+    },
+    "handicap": "Colombia +0.5",
+    "totals": "Under 2.5 (-121)",
+    "signals": [
+      {
+        "type": "adjust_total",
+        "delta": -1,
+        "reason": "首发确认：葡萄牙C罗+B费+菲利克斯全主力，哥伦比亚J罗+Díaz+科尔多瓦全主力。双方已出线但全力争头名。U2.5 favored因双方防线均强（哥伦比亚2场仅失1球）。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "market: 首发确认：葡萄牙C罗+B费+菲利克斯全主力，哥伦比亚J罗+Díaz+科尔多瓦全主力。双方已出线但全力争头名。U2.5 favored因双方防线均强（哥伦比亚2场仅失1球）。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 1.69,
+        "sigma": 0.77,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1842,
+          "1": 0.3116,
+          "2": 0.2636,
+          "3": 0.1487,
+          "4": 0.0629,
+          "5": 0.0213,
+          "6+": 0.0078
+        }
+      },
+      "away": {
+        "lambda": 2.34,
+        "sigma": 0.86,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.0964,
+          "1": 0.2255,
+          "2": 0.2638,
+          "3": 0.2056,
+          "4": 0.1203,
+          "5": 0.0563,
+          "6+": 0.0321
+        }
+      },
+      "joint": {
+        "home_win": 0.287,
+        "draw": 0.196,
+        "away_win": 0.517
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 1.69,
+        "sigma": 0.77,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1842,
+          "1": 0.3116,
+          "2": 0.2636,
+          "3": 0.1487,
+          "4": 0.0629,
+          "5": 0.0213,
+          "6+": 0.0078
+        },
+        "_score": 1
+      },
+      "away": {
+        "lambda": 2.34,
+        "sigma": 0.86,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.0964,
+          "1": 0.2255,
+          "2": 0.2638,
+          "3": 0.2056,
+          "4": 0.1203,
+          "5": 0.0563,
+          "6+": 0.0321
+        },
+        "_score": 1
+      },
+      "joint": {
+        "home_win": 0.287,
+        "draw": 0.196,
+        "away_win": 0.517
+      }
+    }
+  }
+}

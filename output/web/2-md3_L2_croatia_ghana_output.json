@@ -1,0 +1,180 @@
+{
+  "match": "Croatia vs Ghana",
+  "methodology_score": {
+    "home": 2,
+    "away": 1,
+    "direction": "home",
+    "total": 3
+  },
+  "market_adjusted_score": {
+    "home": 0,
+    "away": 0,
+    "direction": "draw",
+    "total": 0
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐⭐",
+      "zh": "中",
+      "en": "medium"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r19_draw_collusion",
+        "name": "平局博弈检测",
+        "gamma": 0.8,
+        "bar": "████████░░",
+        "level": "high",
+        "n": 2
+      },
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      },
+      {
+        "rule_id": "r01_no_clean_sheet",
+        "name": "不预测零封",
+        "gamma": 0.72,
+        "bar": "███████░░░",
+        "level": "medium",
+        "n": 59
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": 1,
+      "away_net_effect": -1,
+      "total_net": 0,
+      "conflict_level": "slight"
+    },
+    "dimension_c_interval": {
+      "width": 2.85,
+      "level": "medium"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 2.2,
+      "opponent_coefficient": 0.7,
+      "triggered_rules": [
+        "r12_tactical_matchup",
+        "r19_draw_collusion",
+        "r01_no_clean_sheet"
+      ],
+      "rule_details": [
+        "r12 tactical slight_advantage +0.40",
+        "r19 collusion -0.60",
+        "r01 +0.36"
+      ],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 1.41,
+      "opponent_coefficient": 1.0,
+      "triggered_rules": [
+        "r19_draw_collusion"
+      ],
+      "rule_details": [
+        "r19 collusion -0.60"
+      ],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 1.77,
+      "draw": 3.4,
+      "away": 5.5
+    },
+    "handicap": "Croatia -0.5 (-135), Ghana +0.5 (+110)",
+    "totals": "Under 2.5 (-155), BTTS No (-125)",
+    "signals": [
+      {
+        "type": "adjust_total",
+        "delta": -1,
+        "reason": "首发确认：格瓦迪奥尔替补(克罗地亚防线削弱)，加纳全主力(0-0逼平英格兰的原班人马)。U2.5 -155大热，BTTS No -125。平局双方晋级。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "r19: draw collusion -1 global",
+    "market: 首发确认：格瓦迪奥尔替补(克罗地亚防线削弱)，加纳全主力(0-0逼平英格兰的原班人马)。U2.5 -155大热，BTTS No -125。平局双方晋级。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 1.69,
+        "sigma": 0.95,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1836,
+          "1": 0.3112,
+          "2": 0.2637,
+          "3": 0.149,
+          "4": 0.0631,
+          "5": 0.0214,
+          "6+": 0.0079
+        }
+      },
+      "away": {
+        "lambda": 0.81,
+        "sigma": 0.79,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.4449,
+          "1": 0.3603,
+          "2": 0.1459,
+          "3": 0.0394,
+          "4": 0.008,
+          "5": 0.0013,
+          "6+": 0.0002
+        }
+      },
+      "joint": {
+        "home_win": 0.585,
+        "draw": 0.237,
+        "away_win": 0.178
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 1.69,
+        "sigma": 0.95,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1836,
+          "1": 0.3112,
+          "2": 0.2637,
+          "3": 0.149,
+          "4": 0.0631,
+          "5": 0.0214,
+          "6+": 0.0079
+        },
+        "_score": 0
+      },
+      "away": {
+        "lambda": 0.81,
+        "sigma": 0.79,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.4449,
+          "1": 0.3603,
+          "2": 0.1459,
+          "3": 0.0394,
+          "4": 0.008,
+          "5": 0.0013,
+          "6+": 0.0002
+        },
+        "_score": 0
+      },
+      "joint": {
+        "home_win": 0.585,
+        "draw": 0.237,
+        "away_win": 0.178
+      }
+    }
+  }
+}

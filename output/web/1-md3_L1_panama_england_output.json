@@ -1,0 +1,179 @@
+{
+  "match": "Panama vs England",
+  "methodology_score": {
+    "home": 0,
+    "away": 3,
+    "direction": "away",
+    "total": 3
+  },
+  "market_adjusted_score": {
+    "home": 0,
+    "away": 3,
+    "direction": "away",
+    "total": 3
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐",
+      "zh": "低",
+      "en": "low"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r20_rain",
+        "name": "雨战",
+        "gamma": 0.6,
+        "bar": "██████░░░░",
+        "level": "low",
+        "n": 4
+      },
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      },
+      {
+        "rule_id": "r07_creativity_absence",
+        "name": "创造力缺阵",
+        "gamma": 0.69,
+        "bar": "██████░░░░",
+        "level": "medium",
+        "n": 18
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": -2,
+      "away_net_effect": 0,
+      "total_net": -2,
+      "conflict_level": "significant"
+    },
+    "dimension_c_interval": {
+      "width": 2.4,
+      "level": "medium"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 1.05,
+      "opponent_coefficient": 0.8,
+      "triggered_rules": [
+        "r20_rain",
+        "r07_creativity_absence"
+      ],
+      "rule_details": [
+        "r20 rain -0.15",
+        "r07 absence -0.55"
+      ],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 2.14,
+      "opponent_coefficient": 0.9,
+      "triggered_rules": [
+        "r12_tactical_matchup",
+        "r20_rain"
+      ],
+      "rule_details": [
+        "r12 tactical overwhelming +1.19",
+        "r20 rain -0.15"
+      ],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 15.0,
+      "draw": 8.0,
+      "away": 1.14
+    },
+    "handicap": "England -2.5 (+125)",
+    "totals": "Under 3.5 (-132), England Win to Nil -135",
+    "signals": [
+      {
+        "type": "adjust_home",
+        "delta": -1,
+        "reason": "England Win to Nil -135；巴拿马两场0进球，Carrasquilla伤缺。首发确认：Saka+Rashford+凯恩全主力，英格兰攻击线完整。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "market: England Win to Nil -135；巴拿马两场0进球，Carrasquilla伤缺。首发确认：Saka+Rashford+凯恩全主力，英格兰攻击线完整。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 0.14,
+        "sigma": 0.79,
+        "model": "negbin",
+        "pmf": {
+          "0": 0.943,
+          "1": 0.0284,
+          "2": 0.0115,
+          "3": 0.0061,
+          "4": 0.0036,
+          "5": 0.0023,
+          "6+": 0.005
+        }
+      },
+      "away": {
+        "lambda": 2.96,
+        "sigma": 0.8,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.0518,
+          "1": 0.1586,
+          "2": 0.2347,
+          "3": 0.2317,
+          "4": 0.1715,
+          "5": 0.1016,
+          "6+": 0.05
+        }
+      },
+      "joint": {
+        "home_win": 0.009,
+        "draw": 0.068,
+        "away_win": 0.923
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 0.14,
+        "sigma": 0.79,
+        "model": "negbin",
+        "pmf": {
+          "0": 0.943,
+          "1": 0.0284,
+          "2": 0.0115,
+          "3": 0.0061,
+          "4": 0.0036,
+          "5": 0.0023,
+          "6+": 0.005
+        },
+        "_score": 0
+      },
+      "away": {
+        "lambda": 2.96,
+        "sigma": 0.8,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.0518,
+          "1": 0.1586,
+          "2": 0.2347,
+          "3": 0.2317,
+          "4": 0.1715,
+          "5": 0.1016,
+          "6+": 0.05
+        },
+        "_score": 3
+      },
+      "joint": {
+        "home_win": 0.009,
+        "draw": 0.068,
+        "away_win": 0.923
+      }
+    }
+  }
+}

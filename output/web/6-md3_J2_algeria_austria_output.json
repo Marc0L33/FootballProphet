@@ -1,0 +1,180 @@
+{
+  "match": "Algeria vs Austria",
+  "methodology_score": {
+    "home": 0,
+    "away": 1,
+    "direction": "away",
+    "total": 1
+  },
+  "market_adjusted_score": {
+    "home": 0,
+    "away": 0,
+    "direction": "draw",
+    "total": 0
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐",
+      "zh": "低",
+      "en": "low"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r07_creativity_absence",
+        "name": "创造力缺阵",
+        "gamma": 0.69,
+        "bar": "██████░░░░",
+        "level": "medium",
+        "n": 18
+      },
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      },
+      {
+        "rule_id": "r19_draw_collusion",
+        "name": "平局博弈检测",
+        "gamma": 0.8,
+        "bar": "████████░░",
+        "level": "high",
+        "n": 2
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": -2,
+      "away_net_effect": 0,
+      "total_net": -2,
+      "conflict_level": "significant"
+    },
+    "dimension_c_interval": {
+      "width": 2.85,
+      "level": "medium"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 1.56,
+      "opponent_coefficient": 0.9,
+      "triggered_rules": [
+        "r19_draw_collusion",
+        "r07_creativity_absence"
+      ],
+      "rule_details": [
+        "r19 collusion -0.60",
+        "r07 absence -0.34"
+      ],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 1.5,
+      "opponent_coefficient": 1.1,
+      "triggered_rules": [
+        "r12_tactical_matchup",
+        "r19_draw_collusion"
+      ],
+      "rule_details": [
+        "r12 tactical slight_advantage +0.40",
+        "r19 collusion -0.60"
+      ],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 3.2,
+      "draw": 2.2,
+      "away": 2.5
+    },
+    "handicap": "PK/even",
+    "totals": "Under 2.5 favored",
+    "signals": [
+      {
+        "type": "adjust_total",
+        "delta": 0,
+        "reason": "首发确认：Amoura伤缺（阿尔及利亚头号射手），阿瑙托维奇首发（奥地利攻击升级）。⑲平局双方晋级（已触发方法论+market auto r19，不叠加adjust_total）。⚠️堪萨斯城降雨(58%)→⑳雨战生效。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "r19: draw collusion -1 global",
+    "market: 首发确认：Amoura伤缺（阿尔及利亚头号射手），阿瑙托维奇首发（奥地利攻击升级）。⑲平局双方晋级（已触发方法论+market auto r19，不叠加adjust_total）。⚠️堪萨斯城降雨(58%)→⑳雨战生效。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 0.46,
+        "sigma": 0.94,
+        "model": "negbin",
+        "pmf": {
+          "0": 0.7236,
+          "1": 0.1712,
+          "2": 0.0617,
+          "3": 0.0248,
+          "4": 0.0105,
+          "5": 0.0046,
+          "6+": 0.0037
+        }
+      },
+      "away": {
+        "lambda": 1.44,
+        "sigma": 0.95,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.2357,
+          "1": 0.3407,
+          "2": 0.2461,
+          "3": 0.1185,
+          "4": 0.0428,
+          "5": 0.0124,
+          "6+": 0.0037
+        }
+      },
+      "joint": {
+        "home_win": 0.115,
+        "draw": 0.274,
+        "away_win": 0.611
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 0.46,
+        "sigma": 0.94,
+        "model": "negbin",
+        "pmf": {
+          "0": 0.7236,
+          "1": 0.1712,
+          "2": 0.0617,
+          "3": 0.0248,
+          "4": 0.0105,
+          "5": 0.0046,
+          "6+": 0.0037
+        },
+        "_score": 0
+      },
+      "away": {
+        "lambda": 1.44,
+        "sigma": 0.95,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.2357,
+          "1": 0.3407,
+          "2": 0.2461,
+          "3": 0.1185,
+          "4": 0.0428,
+          "5": 0.0124,
+          "6+": 0.0037
+        },
+        "_score": 0
+      },
+      "joint": {
+        "home_win": 0.115,
+        "draw": 0.274,
+        "away_win": 0.611
+      }
+    }
+  }
+}

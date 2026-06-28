@@ -273,6 +273,7 @@ class ProphetEngine:
             "xg_per_shot": side.get("xg_per_shot", 0.10),
             "actual_goals": side.get("actual_goals", 0),
             "system_maturity": side.get("system_maturity", False),
+            "bench_strength": side.get("bench_strength", 0),
             "_data_quality": data_quality,
             "triggered_rules": [],
             "rule_details": []
@@ -335,6 +336,33 @@ class ProphetEngine:
                     ctx["goals"] += penalty
                     ctx["triggered_rules"].append(rule_id)
                     ctx["rule_details"].append(f"r16B rotation -{abs(penalty):.2f}")
+
+            elif rule_id == "r21_bench_strength":
+                bench = ctx.get("bench_strength", 0)
+                if bench >= 0.70:
+                    # 5换时代：板凳有5个世界级 → 轮换不是真轮换
+                    # 全额抵消r16惩罚（后30分钟5个主力上来=准A队）
+                    r16_details = [d for d in ctx["rule_details"] if d.startswith("r16")]
+                    if r16_details:
+                        try:
+                            r16_penalty = float(r16_details[-1].split()[-1])
+                            recovery = abs(r16_penalty) * 1.0 * rule["gamma"]
+                            ctx["goals"] += recovery
+                            ctx["triggered_rules"].append(rule_id)
+                            ctx["rule_details"].append(f"r21 bench +{recovery:.2f} (5换时代全额回调)")
+                        except (ValueError, IndexError):
+                            pass
+                elif bench >= 0.50:
+                    r16_details = [d for d in ctx["rule_details"] if d.startswith("r16")]
+                    if r16_details:
+                        try:
+                            r16_penalty = float(r16_details[-1].split()[-1])
+                            recovery = abs(r16_penalty) * 0.25 * rule["gamma"]
+                            ctx["goals"] += recovery
+                            ctx["triggered_rules"].append(rule_id)
+                            ctx["rule_details"].append(f"r21 bench +{recovery:.2f}")
+                        except (ValueError, IndexError):
+                            pass
 
             elif rule_id == "r07_creativity_absence":
                 if ctx["key_player_missing"]:
@@ -414,6 +442,13 @@ class ProphetEngine:
                     ctx["goals"] += late_bonus  # late goals apply to both
                     ctx["triggered_rules"].append(rule_id)
                     ctx["rule_details"].append(f"r18 water_break +late {late_bonus:.2f}")
+
+            elif rule_id == "r20_rain":
+                if match.get("venue_rain"):
+                    penalty = rule["delta"] * rule["gamma"]
+                    ctx["goals"] += penalty
+                    ctx["triggered_rules"].append(rule_id)
+                    ctx["rule_details"].append(f"r20 rain {penalty:+.2f}")
 
             elif rule_id == "r13_extreme_weather":
                 if match.get("suspension_minutes", 0) > 30:

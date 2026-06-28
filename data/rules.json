@@ -2,8 +2,8 @@
   "_meta": {
     "version": "1.0.0",
     "updated": "2026-06-26",
-    "total_rules": 19,
-    "active": 15,
+    "total_rules": 20,
+    "active": 16,
     "shadow_admission": ["r15_indoor", "r17_cross_conf", "r18_water_break"],
     "shadow_demoted": ["r04_red_card"],
     "notes": "Based on 52 incremental updates including MD3 six-match retrospective"
@@ -102,6 +102,18 @@
       "exit_conditions": { "min_gamma": 0.45, "max_consecutive_wrong": 5 }
     },
     {
+      "id": "r21_bench_strength",
+      "name": "板凳深度",
+      "status": "active",
+      "priority": 5.5,
+      "type": "correction",
+      "description": "5换时代替补席强→r16惩罚全额抵消（5个世界级替补后半段上场=准A队）。bench≥0.7回调100%，≥0.5回调25%",
+      "gamma": 0.60, "delta": {"strong": 1.0, "moderate": 0.25}, "sigma": 0.20,
+      "n": 8, "tier": "correction",
+      "trigger_condition": "bench_strength >= 0.50 AND r16 triggered",
+      "effect_tiers": {}
+    },
+    {
       "id": "r17_cross_conf",
       "name": "跨洲校准",
       "status": "shadow_admission",
@@ -156,6 +168,19 @@
       "effect": "total_goals += delta * gamma",
       "scope": "global",
       "exit_conditions": { "min_gamma": 0.50, "max_consecutive_wrong": 5 }
+    },
+    {
+      "id": "r20_rain",
+      "name": "雨战",
+      "status": "active",
+      "priority": 10,
+      "type": "additive",
+      "description": "赛前/赛中持续降雨→双方进攻钝化。England vs Ghana 0-0(雨), England vs Panama 2-0(雨)。δ=-0.25保守。",
+      "gamma": 0.60, "delta": -0.25, "sigma": 0.15,
+      "alpha": 8, "beta": 1, "n": 4,
+      "trigger": "match.venue_rain == true",
+      "effect_tiers": {},
+      "exit_conditions": { "min_gamma": 0.40, "max_consecutive_wrong": 8 }
     },
     {
       "id": "r13_extreme_weather",

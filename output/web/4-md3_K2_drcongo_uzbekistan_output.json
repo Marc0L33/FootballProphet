@@ -1,0 +1,155 @@
+{
+  "match": "DR Congo vs Uzbekistan",
+  "methodology_score": {
+    "home": 2,
+    "away": 1,
+    "direction": "home",
+    "total": 3
+  },
+  "market_adjusted_score": {
+    "home": 1,
+    "away": 0,
+    "direction": "home",
+    "total": 1
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐⭐",
+      "zh": "中",
+      "en": "medium"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": 1,
+      "away_net_effect": 0,
+      "total_net": 1,
+      "conflict_level": "slight"
+    },
+    "dimension_c_interval": {
+      "width": 1.05,
+      "level": "narrow"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 1.14,
+      "opponent_coefficient": 1.3,
+      "triggered_rules": [
+        "r12_tactical_matchup"
+      ],
+      "rule_details": [
+        "r12 tactical clear_advantage +0.79"
+      ],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 0.99,
+      "opponent_coefficient": 0.9,
+      "triggered_rules": [],
+      "rule_details": [],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 1.75,
+      "draw": 3.8,
+      "away": 4.5
+    },
+    "handicap": "DR Congo -0.75",
+    "totals": "Under 2.5 (-111), BTTS No 1.85",
+    "signals": [
+      {
+        "type": "adjust_total",
+        "delta": -1,
+        "reason": "首发确认：刚果万-比萨卡+巴坎布+维萨全主力，乌兹别克胡桑诺夫+肖穆罗多夫全主力。刚果两场仅1个总进球，乌兹别克两场丢8球但进攻贫乏。Under 2.5轻微被看好。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "market: 首发确认：刚果万-比萨卡+巴坎布+维萨全主力，乌兹别克胡桑诺夫+肖穆罗多夫全主力。刚果两场仅1个总进球，乌兹别克两场丢8球但进攻贫乏。Under 2.5轻微被看好。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 2.28,
+        "sigma": 0.84,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1026,
+          "1": 0.2336,
+          "2": 0.2659,
+          "3": 0.2019,
+          "4": 0.1149,
+          "5": 0.0523,
+          "6+": 0.0288
+        }
+      },
+      "away": {
+        "lambda": 0.89,
+        "sigma": 0.72,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.4102,
+          "1": 0.3655,
+          "2": 0.1628,
+          "3": 0.0484,
+          "4": 0.0108,
+          "5": 0.0019,
+          "6+": 0.0003
+        }
+      },
+      "joint": {
+        "home_win": 0.68,
+        "draw": 0.183,
+        "away_win": 0.137
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 2.28,
+        "sigma": 0.84,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1026,
+          "1": 0.2336,
+          "2": 0.2659,
+          "3": 0.2019,
+          "4": 0.1149,
+          "5": 0.0523,
+          "6+": 0.0288
+        },
+        "_score": 1
+      },
+      "away": {
+        "lambda": 0.89,
+        "sigma": 0.72,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.4102,
+          "1": 0.3655,
+          "2": 0.1628,
+          "3": 0.0484,
+          "4": 0.0108,
+          "5": 0.0019,
+          "6+": 0.0003
+        },
+        "_score": 0
+      },
+      "joint": {
+        "home_win": 0.68,
+        "draw": 0.183,
+        "away_win": 0.137
+      }
+    }
+  }
+}

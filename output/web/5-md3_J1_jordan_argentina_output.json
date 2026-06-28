@@ -1,0 +1,198 @@
+{
+  "match": "Jordan vs Argentina",
+  "methodology_score": {
+    "home": 1,
+    "away": 2,
+    "direction": "away",
+    "total": 3
+  },
+  "market_adjusted_score": {
+    "home": 1,
+    "away": 1,
+    "direction": "draw",
+    "total": 2
+  },
+  "confidence": {
+    "rating": {
+      "stars": "⭐⭐",
+      "zh": "中",
+      "en": "medium"
+    },
+    "dimension_a_rule_credibility": [
+      {
+        "rule_id": "r21_bench_strength",
+        "name": "板凳深度",
+        "gamma": 0.6,
+        "bar": "██████░░░░",
+        "level": "low",
+        "n": 8
+      },
+      {
+        "rule_id": "r01_no_clean_sheet",
+        "name": "不预测零封",
+        "gamma": 0.72,
+        "bar": "███████░░░",
+        "level": "medium",
+        "n": 59
+      },
+      {
+        "rule_id": "r07_creativity_absence",
+        "name": "创造力缺阵",
+        "gamma": 0.69,
+        "bar": "██████░░░░",
+        "level": "medium",
+        "n": 18
+      },
+      {
+        "rule_id": "r16_morale_decay",
+        "name": "战意衰减",
+        "gamma": 0.55,
+        "bar": "█████░░░░░",
+        "level": "low",
+        "n": 4
+      },
+      {
+        "rule_id": "r12_tactical_matchup",
+        "name": "战术对位",
+        "gamma": 0.79,
+        "bar": "███████░░░",
+        "level": "high",
+        "n": 46
+      }
+    ],
+    "dimension_b_conflict": {
+      "home_net_effect": 1,
+      "away_net_effect": 0,
+      "total_net": 1,
+      "conflict_level": "slight"
+    },
+    "dimension_c_interval": {
+      "width": 4.8,
+      "level": "wide"
+    }
+  },
+  "rule_application": {
+    "home": {
+      "baseline_gf": 1.42,
+      "opponent_coefficient": 0.7,
+      "triggered_rules": [
+        "r01_no_clean_sheet"
+      ],
+      "rule_details": [
+        "r01 +0.36"
+      ],
+      "capped": false
+    },
+    "away": {
+      "baseline_gf": 1.95,
+      "opponent_coefficient": 1.2,
+      "triggered_rules": [
+        "r12_tactical_matchup",
+        "r16_morale_decay",
+        "r21_bench_strength",
+        "r07_creativity_absence"
+      ],
+      "rule_details": [
+        "r12 tactical clear_advantage +0.79",
+        "r16A morale -0.83",
+        "r21 bench +0.37 (5换时代板凳深度回调75%)",
+        "r07 absence -0.90"
+      ],
+      "capped": false
+    }
+  },
+  "market_signals": {
+    "moneyline": {
+      "home": 15.0,
+      "draw": 7.5,
+      "away": 1.16
+    },
+    "handicap": "Argentina -1.5 (-175)",
+    "totals": "Over 2.5 (-186)",
+    "signals": [
+      {
+        "type": "adjust_away",
+        "delta": 0,
+        "reason": "首发确认：阿根廷轮换10人（仅大马丁保留），Messi/DePaul/MacAllister替补。但Alvarez+LoCelso+Otamendi领衔的B队仍远超约旦。r16A+r16B已覆盖轮换惩罚，此处不叠加。"
+      }
+    ]
+  },
+  "market_adjustments": [
+    "r16B: away rotation 10 → -1",
+    "market: 首发确认：阿根廷轮换10人（仅大马丁保留），Messi/DePaul/MacAllister替补。但Alvarez+LoCelso+Otamendi领衔的B队仍远超约旦。r16A+r16B已覆盖轮换惩罚，此处不叠加。"
+  ],
+  "distributions": {
+    "methodology": {
+      "home": {
+        "lambda": 1.35,
+        "sigma": 0.85,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.2582,
+          "1": 0.3496,
+          "2": 0.2367,
+          "3": 0.1068,
+          "4": 0.0362,
+          "5": 0.0098,
+          "6+": 0.0027
+        }
+      },
+      "away": {
+        "lambda": 1.79,
+        "sigma": 1.0,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1676,
+          "1": 0.2993,
+          "2": 0.2674,
+          "3": 0.1592,
+          "4": 0.0711,
+          "5": 0.0254,
+          "6+": 0.01
+        }
+      },
+      "joint": {
+        "home_win": 0.295,
+        "draw": 0.228,
+        "away_win": 0.477
+      }
+    },
+    "market_adjusted": {
+      "home": {
+        "lambda": 1.35,
+        "sigma": 0.85,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.2582,
+          "1": 0.3496,
+          "2": 0.2367,
+          "3": 0.1068,
+          "4": 0.0362,
+          "5": 0.0098,
+          "6+": 0.0027
+        },
+        "_score": 1
+      },
+      "away": {
+        "lambda": 1.79,
+        "sigma": 1.0,
+        "model": "poisson",
+        "pmf": {
+          "0": 0.1676,
+          "1": 0.2993,
+          "2": 0.2674,
+          "3": 0.1592,
+          "4": 0.0711,
+          "5": 0.0254,
+          "6+": 0.01
+        },
+        "_score": 1
+      },
+      "joint": {
+        "home_win": 0.295,
+        "draw": 0.228,
+        "away_win": 0.477
+      }
+    }
+  }
+}

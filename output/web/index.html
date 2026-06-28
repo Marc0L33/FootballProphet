@@ -310,6 +310,7 @@ function renderDist(pmf, side) {
 
 function renderOne(data) {
   const [hn,an] = (data.match||"A vs B").split(" vs ");
+  const mh = data.methodology_score||{};
   const mk = data.market_adjusted_score||{};
   const confData = (data.confidence||{}).rating||{};
   const conf = typeof confData==='string' ? confData : `${confData.stars||''} ${confData[LANG]||confData.en||confData}`;
@@ -353,9 +354,15 @@ function renderOne(data) {
   return `
     <div class="match-card">
       <div class="match-title">${label(hn)} <span class="vs">vs</span> ${label(an)}</div>
-      <div class="score-line">
-        <span class="score-num">${mk.home} – ${mk.away}</span>
-        <span class="score-label">${t('score_ref')} · ${dir}</span>
+      <div class="score-line" style="display:flex;gap:32px;justify-content:center;">
+        <div style="text-align:center">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${LANG==='zh'?'方法论':'Methodology'}</div>
+          <span class="score-num">${mh.home} – ${mh.away}</span>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${t('score_ref')}</div>
+          <span class="score-num">${mk.home} – ${mk.away}</span>
+        </div>
       </div>
       <div class="meta">
         <span>${t('confidence')} <span class="stars">${conf}</span></span>

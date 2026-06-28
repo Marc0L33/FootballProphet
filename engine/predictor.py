@@ -539,19 +539,21 @@ class ProphetEngine:
         h_sigma = self._pooled_sigma(h_ctx, mh)
         a_sigma = self._pooled_sigma(a_ctx, ma)
 
-        mkt_h_lam = max(0.01, h_lam + (mkt_h - mh))  # shift λ by market delta
-        mkt_a_lam = max(0.01, a_lam + (mkt_a - ma))
+        # Market-adjusted distributions use methodology λ — market signals
+        # only affect the final score display, not the underlying distribution.
+        # Shifting λ by the rounded-score delta was causing absurd results
+        # (e.g. Colombia λ 1.69 → 0.69, P(0)=50% with J罗+Díaz starting).
 
         m_dist = GoalDistribution(h_lam, h_sigma)
         a_dist = GoalDistribution(a_lam, a_sigma)
         joint = JointDistribution(h_lam, a_lam, h_sigma, a_sigma)
 
-        mkt_h_dist = GoalDistribution(mkt_h_lam, h_sigma)
-        mkt_a_dist = GoalDistribution(mkt_a_lam, a_sigma)
-        mkt_joint = JointDistribution(mkt_h_lam, mkt_a_lam, h_sigma, a_sigma)
+        # Market-adjusted: same football reality, different final score
+        mkt_h_dist = m_dist
+        mkt_a_dist = a_dist
+        mkt_joint = joint
 
         dirs = joint.direction_probs()
-        mkt_dirs = mkt_joint.direction_probs()
 
         return {
             "methodology": {
@@ -575,21 +577,23 @@ class ProphetEngine:
             },
             "market_adjusted": {
                 "home": {
-                    "lambda": round(mkt_h_lam, 2),
+                    "lambda": round(h_lam, 2),
                     "sigma": round(h_sigma, 2),
                     "model": m_dist._model,
-                    "pmf": mkt_h_dist.pmf,
+                    "pmf": m_dist.pmf,
+                    "_score": mkt_h
                 },
                 "away": {
-                    "lambda": round(mkt_a_lam, 2),
+                    "lambda": round(a_lam, 2),
                     "sigma": round(a_sigma, 2),
                     "model": a_dist._model,
-                    "pmf": mkt_a_dist.pmf,
+                    "pmf": a_dist.pmf,
+                    "_score": mkt_a
                 },
                 "joint": {
-                    "home_win": mkt_dirs["home_win"],
-                    "draw": mkt_dirs["draw"],
-                    "away_win": mkt_dirs["away_win"],
+                    "home_win": dirs["home_win"],
+                    "draw": dirs["draw"],
+                    "away_win": dirs["away_win"],
                 }
             }
         }

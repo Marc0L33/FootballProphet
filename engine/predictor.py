@@ -666,11 +666,11 @@ class ProphetEngine:
     def _pooled_sigma(self, ctx, rounded_goals) -> float:
         """Pool sigma from triggered rules + baseline residual + data quality penalty."""
         rules = self.rules
-        total_var = 0.5  # baseline variance (λ ≈ σ² from Poisson)
+        raw = ctx["goals"]
+        total_var = raw  # Poisson baseline: var = λ
         for rid in ctx["triggered_rules"]:
             if rid in rules and rules[rid].get("sigma"):
                 total_var += rules[rid]["sigma"] ** 2
-        raw = ctx["goals"]
         total_var += (raw - rounded_goals) ** 2
 
         # Data quality penalty: ⚠️ estimated teams get +30% variance, hosts +50%

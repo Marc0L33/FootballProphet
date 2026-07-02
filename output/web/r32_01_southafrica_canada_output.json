@@ -1,5 +1,6 @@
 {
   "match": "South Africa vs Canada",
+  "generated_at": "2026-06-28T17:42:21Z",
   "methodology_score": {
     "home": 1,
     "away": 2,
@@ -20,6 +21,14 @@
     },
     "dimension_a_rule_credibility": [
       {
+        "rule_id": "r07_creativity_absence",
+        "name": "创造力缺阵",
+        "gamma": 0.69,
+        "bar": "██████░░░░",
+        "level": "medium",
+        "n": 18
+      },
+      {
         "rule_id": "r03_home_advantage",
         "name": "主场优势",
         "gamma": 0.7,
@@ -34,14 +43,6 @@
         "bar": "███████░░░",
         "level": "high",
         "n": 46
-      },
-      {
-        "rule_id": "r07_creativity_absence",
-        "name": "创造力缺阵",
-        "gamma": 0.69,
-        "bar": "██████░░░░",
-        "level": "medium",
-        "n": 18
       }
     ],
     "dimension_b_conflict": {
@@ -77,7 +78,7 @@
       ],
       "rule_details": [
         "r12 tactical clear_advantage +0.79",
-        "r07 absence -0.55",
+        "r07 absence -0.62",
         "r03 host +0.28"
       ],
       "capped": false
@@ -95,12 +96,12 @@
       {
         "type": "adjust_total",
         "delta": -1,
-        "reason": "U2.25低盘说明市场预期沉闷淘汰赛。南非小组赛3场仅失3球(含2张红牌的揭幕战)，防守组织严密。加拿大Koné伤缺中场受损，但David+Davies+Larin三叉戟仍在。"
+        "reason": "FIFA官方首发：Davies+DeFougerolles+Ahmed+Osorio+PromiseDavid替补。Bombito首发中卫，Oluwaseyi意外首发中锋（Larin替补）。封闭顶棚无天气影响。U2.25低盘。"
       }
     ]
   },
   "market_adjustments": [
-    "market: U2.25低盘说明市场预期沉闷淘汰赛。南非小组赛3场仅失3球(含2张红牌的揭幕战)，防守组织严密。加拿大Koné伤缺中场受损，但David+Davies+Larin三叉戟仍在。"
+    "market: FIFA官方首发：Davies+DeFougerolles+Ahmed+Osorio+PromiseDavid替补。Bombito首发中卫，Oluwaseyi意外首发中锋（Larin替补）。封闭顶棚无天气影响。U2.25低盘。"
   ],
   "distributions": {
     "methodology": {
@@ -119,23 +120,23 @@
         }
       },
       "away": {
-        "lambda": 2.25,
-        "sigma": 1.11,
+        "lambda": 2.18,
+        "sigma": 1.09,
         "model": "poisson",
         "pmf": {
-          "0": 0.1058,
-          "1": 0.2377,
-          "2": 0.2669,
-          "3": 0.1998,
-          "4": 0.1122,
-          "5": 0.0504,
-          "6+": 0.0272
+          "0": 0.1134,
+          "1": 0.2468,
+          "2": 0.2687,
+          "3": 0.195,
+          "4": 0.1061,
+          "5": 0.0462,
+          "6+": 0.0238
         }
       },
       "joint": {
-        "home_win": 0.212,
-        "draw": 0.197,
-        "away_win": 0.591
+        "home_win": 0.22,
+        "draw": 0.202,
+        "away_win": 0.578
       }
     },
     "market_adjusted": {
@@ -155,24 +156,24 @@
         "_score": 0
       },
       "away": {
-        "lambda": 2.25,
-        "sigma": 1.11,
+        "lambda": 2.18,
+        "sigma": 1.09,
         "model": "poisson",
         "pmf": {
-          "0": 0.1058,
-          "1": 0.2377,
-          "2": 0.2669,
-          "3": 0.1998,
-          "4": 0.1122,
-          "5": 0.0504,
-          "6+": 0.0272
+          "0": 0.1134,
+          "1": 0.2468,
+          "2": 0.2687,
+          "3": 0.195,
+          "4": 0.1061,
+          "5": 0.0462,
+          "6+": 0.0238
         },
         "_score": 1
       },
       "joint": {
-        "home_win": 0.212,
-        "draw": 0.197,
-        "away_win": 0.591
+        "home_win": 0.22,
+        "draw": 0.202,
+        "away_win": 0.578
       }
     }
   }

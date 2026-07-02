@@ -421,6 +421,19 @@ class ProphetEngine:
                         ctx["triggered_rules"].append(rule_id)
                         ctx["rule_details"].append(f"r12 tactical {tier} {impact:+.2f}")
 
+            elif rule_id == "r22_knockout_decay":
+                stage = match.get("stage", "")
+                mline = match.get("_moneyline", {})
+                if stage == "knockout":
+                    fav_odds = mline.get("home", 99) if is_home else mline.get("away", 99)
+                    if fav_odds < 1.60:
+                        multiplier = rule["delta"]
+                        old_goals = ctx["goals"]
+                        ctx["goals"] *= multiplier
+                        ctx["triggered_rules"].append(rule_id)
+                        new_goals = ctx["goals"]
+                        ctx["rule_details"].append(f'r22 knockout_decay x{multiplier:.2f} ({old_goals:.2f}->{new_goals:.2f})')
+
             elif rule_id == "r19_draw_collusion":
                 if match.get("draw_both_advance"):
                     impact = rule["delta"] * rule["gamma"]
@@ -484,6 +497,10 @@ class ProphetEngine:
         match_ctx = match_input.get("match", {})
         market = match_input.get("market", {})
 
+        # Pass moneyline to match_ctx for r22 knockout_decay
+        if "moneyline" in market:
+            match_ctx["_moneyline"] = market["moneyline"]
+
         # Get tournament match history for ⑭ blend
         home_tournament = home_side.get("tournament_matches", [])
         away_tournament = away_side.get("tournament_matches", [])
@@ -501,9 +518,10 @@ class ProphetEngine:
             rule = self.rules[rule_id]
             h_ctx, a_ctx = self._apply_rule(rule_id, rule, h_ctx, a_ctx, match_ctx)
 
-        # Round to get methodology scores
-        methodology_home = max(0, round(h_ctx["goals"]))
-        methodology_away = max(0, round(a_ctx["goals"]))
+        # Methodology scores use floor (Poisson mode), not round
+        # round(2.82)=3 but P(2)=24% > P(3)=23%, bar chart shows 2
+        methodology_home = max(0, int(h_ctx["goals"]))
+        methodology_away = max(0, int(a_ctx["goals"]))
 
         # Market-adjusted score (if market signals provided)
         market_home = methodology_home
@@ -518,6 +536,17 @@ class ProphetEngine:
             market_home, market_away = mh, ma
             market_adjustments = adjustments
 
+        # Boundary separation: when methodology == market and λ on floor/round edge,
+        # push methodology to round for that team, market keeps floor. Forces divergence.
+        if methodology_home == market_home and methodology_away == market_away:
+            h_lam, a_lam = h_ctx["goals"], a_ctx["goals"]
+            h_floor, h_round = int(h_lam), round(h_lam)
+            a_floor, a_round = int(a_lam), round(a_lam)
+            if h_floor != h_round:
+                methodology_home = h_round
+            elif a_floor != a_round:
+                methodology_away = a_round
+
         # Build output
         methodology_direction = ("home" if methodology_home > methodology_away
                                 else ("away" if methodology_home < methodology_away else "draw"))
@@ -526,6 +555,7 @@ class ProphetEngine:
 
         return {
             "match": f"{home_team} vs {away_team}",
+            "generated_at": "",
             "methodology_score": {
                 "home": methodology_home,
                 "away": methodology_away,
@@ -789,6 +819,9 @@ def main():
                 match_input = json.load(f)
 
             result = engine.predict(match_input)
+            from datetime import datetime, timezone
+            ts = datetime.fromtimestamp(os.path.getmtime(in_path), tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            result["generated_at"] = ts
             json_output = json.dumps(result, indent=2, ensure_ascii=False)
 
             out_name = fname.replace(".json", "_output.json")
@@ -808,6 +841,11 @@ def main():
 
     engine = ProphetEngine()
     result = engine.predict(match_input)
+
+    # Timestamp = input JSON mtime (moment of last data update, not engine runtime)
+    from datetime import datetime, timezone
+    ts = datetime.fromtimestamp(os.path.getmtime(args.input), tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    result["generated_at"] = ts
 
     json_output = json.dumps(result, indent=2, ensure_ascii=False)
 
@@ -831,7 +869,8 @@ def main():
             print(f"  Prophet v1.0.0 — {match_name}")
             print(f"{'='*70}")
 
-            print(f"\n  参考比分: {mk['home']}-{mk['away']} ({mk['direction']})  |  信度: {result['confidence']['rating']}")
+            mth = result["methodology_score"]
+            print(f"\n  方法论 {mth['home']}-{mth['away']} / 市场修正 {mk['home']}-{mk['away']} ({mk['direction']})  |  信度: {result['confidence']['rating']}")
 
             # Rules
             h_rules = result["rule_application"]["home"]["triggered_rules"]

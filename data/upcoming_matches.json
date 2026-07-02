@@ -1,0 +1,42 @@
+[
+  {
+    "id": "r32_11",
+    "home": "Spain",
+    "away": "Austria",
+    "fifa_url": "https://www.fifa.com/en/match-centre/match/17/285023/289287/400021519",
+    "kickoff": "2026-07-03T03:00:00+08:00",
+    "input_json": "output/predictions/r32_11_spain_austria.json"
+  },
+  {
+    "id": "r32_12",
+    "home": "Portugal",
+    "away": "Croatia",
+    "fifa_url": "https://www.fifa.com/en/match-centre/match/17/285023/289287/400021526",
+    "kickoff": "2026-07-03T07:00:00+08:00",
+    "input_json": "output/predictions/r32_12_portugal_croatia.json"
+  },
+  {
+    "id": "r32_13",
+    "home": "Switzerland",
+    "away": "Algeria",
+    "fifa_url": "https://www.fifa.com/en/match-centre/match/17/285023/289287/400021527",
+    "kickoff": "2026-07-03T11:00:00+08:00",
+    "input_json": "output/predictions/r32_13_switzerland_algeria.json"
+  },
+  {
+    "id": "r32_14",
+    "home": "Australia",
+    "away": "Egypt",
+    "fifa_url": "https://www.fifa.com/en/match-centre/match/17/285023/289287/400021515",
+    "kickoff": "2026-07-04T02:00:00+08:00",
+    "input_json": "output/predictions/r32_14_australia_egypt.json"
+  },
+  {
+    "id": "r32_15",
+    "home": "Argentina",
+    "away": "Cabo Verde",
+    "fifa_url": "https://www.fifa.com/en/match-centre/match/17/285023/289287/400021521",
+    "kickoff": "2026-07-04T06:00:00+08:00",
+    "input_json": "output/predictions/r32_15_argentina_caboverde.json"
+  }
+]

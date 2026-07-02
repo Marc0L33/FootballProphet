@@ -1,55 +1,389 @@
 {
-  "_meta": {"version":"1.2","updated":"2026-06-27","tournament":"2026 FIFA World Cup","hosts":["USA","Mexico","Canada"],"total_teams":48,
-    "_note":"Full audit completed. UEFA+CONMEBOL+CAF+AFC: verified via match-level data. CONCACAF: third-round-only data used (cleaner). Hosts: friendlies only. All minnow-washed per ⑥ rules.json list."
+  "_meta": {
+    "version": "1.2",
+    "updated": "2026-06-27",
+    "tournament": "2026 FIFA World Cup",
+    "hosts": [
+      "USA",
+      "Mexico",
+      "Canada"
+    ],
+    "total_teams": 48,
+    "_note": "Full audit completed. UEFA+CONMEBOL+CAF+AFC: verified via match-level data. CONCACAF: third-round-only data used (cleaner). Hosts: friendlies only. All minnow-washed per ⑥ rules.json list."
   },
   "teams": {
-    "Argentina":    {"gf":1.72,"ga":0.56,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Algeria":      {"gf":1.80,"ga":0.80,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: Somalia minnow removed. Raw 24GF→1.80"},
-    "Australia":    {"gf":1.60,"ga":0.70,"conf":"AFC","matches":10,"is_host":false},
-    "Austria":      {"gf":1.50,"ga":0.50,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: San Marino 14GF removed"},
-    "Belgium":      {"gf":2.30,"ga":0.90,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Liechtenstein 13GF removed"},
-    "Bosnia":       {"gf":1.60,"ga":1.00,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: San Marino 7GF removed"},
-    "Brazil":       {"gf":1.33,"ga":0.94,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Canada":       {"gf":1.60,"ga":2.00,"conf":"CONCACAF","matches":5,"is_host":true,"_note":"⚠️ Host. Friendlies only."},
-    "Cape Verde":   {"gf":1.60,"ga":0.80,"conf":"CAF","matches":10,"is_host":false,"_note":"Verified. Group D winner 23pts."},
-    "Colombia":     {"gf":1.56,"ga":1.00,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Croatia":      {"gf":2.50,"ga":0.50,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Faroe Islands+Gibraltar removed"},
-    "Curacao":      {"gf":1.60,"ga":1.00,"conf":"CONCACAF","matches":6,"is_host":false,"_note":"CONCACAF 3rd round: 13GF/6G=2.17→washed to 1.60 for earlier minnows"},
-    "Czechia":      {"gf":1.50,"ga":1.20,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Gibraltar 10GF removed"},
-    "DR Congo":     {"gf":1.42,"ga":0.58,"conf":"CAF","matches":12,"is_host":false,"_note":"Verified. 17GF/12G including playoffs."},
-    "Ecuador":      {"gf":0.78,"ga":0.28,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Egypt":        {"gf":1.60,"ga":0.20,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: Djibouti minnow removed. Raw 20GF→1.60"},
-    "England":      {"gf":2.20,"ga":0.30,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Andorra+Latvia 13GF removed. 0GA→0.30 adjusted."},
-    "France":       {"gf":2.50,"ga":0.70,"conf":"UEFA","matches":6,"is_host":false,"_note":"⑥ washed: Azerbaijan 6GF removed"},
-    "Germany":      {"gf":2.67,"ga":0.50,"conf":"UEFA","matches":6,"is_host":false},
-    "Ghana":        {"gf":1.80,"ga":0.60,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: Chad minnow removed. Raw 23GF→1.80"},
-    "Haiti":        {"gf":1.50,"ga":1.00,"conf":"CONCACAF","matches":6,"is_host":false,"_note":"CONCACAF 3rd round: 9GF/6G=1.50"},
-    "Iran":         {"gf":1.80,"ga":0.60,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 18GF/10G"},
-    "Iraq":         {"gf":0.90,"ga":0.90,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 9GF/10G"},
-    "Ivory Coast":  {"gf":1.13,"ga":0.30,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: Seychelles 16GF removed"},
-    "Japan":        {"gf":2.00,"ga":0.50,"conf":"AFC","matches":16,"is_host":false,"_note":"⑥ washed: 2nd round minnows removed. AFC 3rd round: 30GF/10G=3.00 but kept at 2.00"},
-    "Jordan":       {"gf":1.60,"ga":0.80,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 16GF/10G. First World Cup."},
-    "Mexico":       {"gf":2.00,"ga":1.33,"conf":"CONCACAF","matches":6,"is_host":true,"_note":"⚠️ Host. Friendlies only."},
-    "Morocco":      {"gf":2.00,"ga":0.20,"conf":"CAF","matches":8,"is_host":false,"_note":"⑥ washed: Congo Republic minnow. Raw 22GF/8G=2.75→2.00"},
-    "Netherlands":  {"gf":2.50,"ga":0.50,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: San Marino+Malta removed"},
-    "New Zealand":  {"gf":1.20,"ga":1.50,"conf":"OFC","matches":5,"is_host":false,"_note":"⑥ washed: OFC minnows"},
-    "Norway":       {"gf":3.00,"ga":0.80,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Moldova 11-1 removed"},
-    "Panama":       {"gf":1.50,"ga":0.67,"conf":"CONCACAF","matches":6,"is_host":false,"_note":"CONCACAF 3rd round: 9GF/6G"},
-    "Paraguay":     {"gf":0.78,"ga":0.56,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Portugal":     {"gf":1.80,"ga":1.20,"conf":"UEFA","matches":6,"is_host":false,"_note":"⑥ washed: Armenia 14GF removed"},
-    "Qatar":        {"gf":1.80,"ga":2.20,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 18GF/10G. Terrible defense."},
-    "Saudi Arabia": {"gf":0.70,"ga":0.80,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 7GF/10G. Ultra-defensive."},
-    "Scotland":     {"gf":2.17,"ga":1.17,"conf":"UEFA","matches":6,"is_host":false},
-    "Senegal":      {"gf":1.80,"ga":0.30,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: South Sudan minnow. Raw 22GF→1.80"},
-    "South Africa": {"gf":1.70,"ga":0.60,"conf":"CAF","matches":10,"is_host":false,"_note":"Verified. Group C winner."},
-    "South Korea":  {"gf":2.00,"ga":0.70,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 20GF/10G"},
-    "Spain":        {"gf":2.50,"ga":0.50,"conf":"UEFA","matches":6,"is_host":false,"_note":"⑥ washed: Turkey 6-0+Georgia+Bulgaria removed"},
-    "Sweden":       {"gf":1.25,"ga":1.88,"conf":"UEFA","matches":8,"is_host":false},
-    "Switzerland":  {"gf":2.33,"ga":0.33,"conf":"UEFA","matches":6,"is_host":false},
-    "Tunisia":      {"gf":1.30,"ga":1.20,"conf":"CAF","matches":10,"is_host":false,"_note":"⑥ washed: CAF minnows removed"},
-    "Turkey":       {"gf":1.90,"ga":1.50,"conf":"UEFA","matches":8,"is_host":false,"_note":"⑥ washed: Bulgaria 8GF removed"},
-    "USA":          {"gf":1.50,"ga":2.75,"conf":"CONCACAF","matches":4,"is_host":true,"_note":"⚠️ Host. Friendlies vs elite teams only."},
-    "Uruguay":      {"gf":1.22,"ga":0.67,"conf":"CONMEBOL","matches":18,"is_host":false},
-    "Uzbekistan":   {"gf":1.20,"ga":0.80,"conf":"AFC","matches":10,"is_host":false,"_note":"AFC 3rd round: 12GF/10G. First World Cup."}
+    "Argentina": {
+      "gf": 1.72,
+      "ga": 0.56,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Algeria": {
+      "gf": 1.8,
+      "ga": 1.0,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: Somalia minnow removed. Raw 24GF→1.80. GA清洗: Somalia 2场GA=0→真实GA=8/8=1.00"
+    },
+    "Australia": {
+      "gf": 1.6,
+      "ga": 0.7,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false
+    },
+    "Austria": {
+      "gf": 1.5,
+      "ga": 0.67,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: San Marino 14GF removed. GA清洗: San Marino 2场GA=0→真实GA=4/6=0.67"
+    },
+    "Belgium": {
+      "gf": 2.3,
+      "ga": 1.2,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Liechtenstein 13GF removed. GA清洗: Liechtenstein 2场GA=0→真实GA=7.2/6=1.20"
+    },
+    "Bosnia": {
+      "gf": 1.6,
+      "ga": 1.33,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: San Marino 7GF removed. GA清洗: San Marino 2场GA=0→真实GA=8/6=1.33"
+    },
+    "Brazil": {
+      "gf": 1.33,
+      "ga": 0.94,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Canada": {
+      "gf": 1.6,
+      "ga": 2.0,
+      "conf": "CONCACAF",
+      "matches": 5,
+      "is_host": true,
+      "_note": "⚠️ Host. Friendlies only."
+    },
+    "Cape Verde": {
+      "gf": 1.6,
+      "ga": 0.8,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "Verified. Group D winner 23pts."
+    },
+    "Colombia": {
+      "gf": 1.56,
+      "ga": 1.0,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Croatia": {
+      "gf": 2.5,
+      "ga": 0.67,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Faroe Islands+Gibraltar removed. GA清洗: Gibraltar 2场GA=0→真实GA=4/6=0.67"
+    },
+    "Curacao": {
+      "gf": 1.6,
+      "ga": 1.0,
+      "conf": "CONCACAF",
+      "matches": 6,
+      "is_host": false,
+      "_note": "CONCACAF 3rd round: 13GF/6G=2.17→washed to 1.60 for earlier minnows"
+    },
+    "Czechia": {
+      "gf": 1.5,
+      "ga": 1.6,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Gibraltar 10GF removed. GA清洗: Gibraltar 2场GA=0→真实GA=9.6/6=1.60"
+    },
+    "DR Congo": {
+      "gf": 1.42,
+      "ga": 0.58,
+      "conf": "CAF",
+      "matches": 12,
+      "is_host": false,
+      "_note": "Verified. 17GF/12G including playoffs."
+    },
+    "Ecuador": {
+      "gf": 0.78,
+      "ga": 0.28,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Egypt": {
+      "gf": 1.6,
+      "ga": 0.25,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: Djibouti minnow removed. Raw 20GF→1.60. GA清洗: Djibouti 2场GA=0→真实GA=2/8=0.25"
+    },
+    "England": {
+      "gf": 2.2,
+      "ga": 0.3,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Andorra+Latvia 13GF removed. 0GA→0.30 adjusted."
+    },
+    "France": {
+      "gf": 2.5,
+      "ga": 0.7,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false,
+      "_note": "⑥ washed: Azerbaijan 6GF removed"
+    },
+    "Germany": {
+      "gf": 2.67,
+      "ga": 0.5,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false
+    },
+    "Ghana": {
+      "gf": 1.8,
+      "ga": 0.75,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: Chad minnow removed. Raw 23GF→1.80. GA清洗: Chad 2场GA=0→真实GA=6/8=0.75"
+    },
+    "Haiti": {
+      "gf": 1.5,
+      "ga": 1.0,
+      "conf": "CONCACAF",
+      "matches": 6,
+      "is_host": false,
+      "_note": "CONCACAF 3rd round: 9GF/6G=1.50"
+    },
+    "Iran": {
+      "gf": 1.8,
+      "ga": 0.6,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 18GF/10G"
+    },
+    "Iraq": {
+      "gf": 0.9,
+      "ga": 0.9,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 9GF/10G"
+    },
+    "Ivory Coast": {
+      "gf": 1.13,
+      "ga": 0.38,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: Seychelles 16GF removed. GA清洗: Seychelles 2场GA=0→真实GA=3/8=0.38"
+    },
+    "Japan": {
+      "gf": 2.0,
+      "ga": 0.5,
+      "conf": "AFC",
+      "matches": 16,
+      "is_host": false,
+      "_note": "⑥ washed: 2nd round minnows removed. AFC 3rd round: 30GF/10G=3.00 but kept at 2.00"
+    },
+    "Jordan": {
+      "gf": 1.6,
+      "ga": 0.8,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 16GF/10G. First World Cup."
+    },
+    "Mexico": {
+      "gf": 2.0,
+      "ga": 1.33,
+      "conf": "CONCACAF",
+      "matches": 6,
+      "is_host": true,
+      "_note": "⚠️ Host. Friendlies only."
+    },
+    "Morocco": {
+      "gf": 2.0,
+      "ga": 0.27,
+      "conf": "CAF",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Congo Republic minnow. Raw 22GF/8G=2.75→2.00. GA清洗: Congo 2场GA=0→真实GA=1.6/6=0.27"
+    },
+    "Netherlands": {
+      "gf": 2.5,
+      "ga": 0.75,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: San Marino+Malta removed. GA清洗: Malta 1球→真实GA=(4-1)/4=0.75"
+    },
+    "New Zealand": {
+      "gf": 1.2,
+      "ga": 1.5,
+      "conf": "OFC",
+      "matches": 5,
+      "is_host": false,
+      "_note": "⑥ washed: OFC minnows"
+    },
+    "Norway": {
+      "gf": 3.0,
+      "ga": 0.9,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Moldova 11-1 removed. GA清洗: Moldova 1GA→真实GA=(6.4-1)/6=0.90"
+    },
+    "Panama": {
+      "gf": 1.5,
+      "ga": 0.67,
+      "conf": "CONCACAF",
+      "matches": 6,
+      "is_host": false,
+      "_note": "CONCACAF 3rd round: 9GF/6G"
+    },
+    "Paraguay": {
+      "gf": 0.78,
+      "ga": 0.56,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Portugal": {
+      "gf": 1.8,
+      "ga": 1.50,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false,
+      "_note": "⑥ washed: Armenia 14GF+1GA removed. GA清洗: (7-1)/(6-2)=1.50"
+    },
+    "Qatar": {
+      "gf": 1.8,
+      "ga": 2.2,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 18GF/10G. Terrible defense."
+    },
+    "Saudi Arabia": {
+      "gf": 0.7,
+      "ga": 0.8,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 7GF/10G. Ultra-defensive."
+    },
+    "Scotland": {
+      "gf": 2.17,
+      "ga": 1.17,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false
+    },
+    "Senegal": {
+      "gf": 1.8,
+      "ga": 0.38,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: South Sudan minnow. Raw 22GF→1.80. GA清洗: South Sudan 2场GA=0→真实GA=3/8=0.38"
+    },
+    "South Africa": {
+      "gf": 1.7,
+      "ga": 0.6,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "Verified. Group C winner."
+    },
+    "South Korea": {
+      "gf": 2.0,
+      "ga": 0.7,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 20GF/10G"
+    },
+    "Spain": {
+      "gf": 2.5,
+      "ga": 0.5,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false,
+      "_note": "⑥ washed: Turkey 6-0+Georgia+Bulgaria removed"
+    },
+    "Sweden": {
+      "gf": 1.25,
+      "ga": 1.88,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false
+    },
+    "Switzerland": {
+      "gf": 2.33,
+      "ga": 0.33,
+      "conf": "UEFA",
+      "matches": 6,
+      "is_host": false
+    },
+    "Tunisia": {
+      "gf": 1.3,
+      "ga": 1.2,
+      "conf": "CAF",
+      "matches": 10,
+      "is_host": false,
+      "_note": "⑥ washed: CAF minnows removed"
+    },
+    "Turkey": {
+      "gf": 1.9,
+      "ga": 1.5,
+      "conf": "UEFA",
+      "matches": 8,
+      "is_host": false,
+      "_note": "⑥ washed: Bulgaria 8GF removed"
+    },
+    "USA": {
+      "gf": 1.5,
+      "ga": 1.5,
+      "conf": "CONCACAF",
+      "matches": 4,
+      "is_host": true,
+      "_note": "⚠️ 东道主友谊赛GA修正(2.75→1.5)"
+    },
+    "Uruguay": {
+      "gf": 1.22,
+      "ga": 0.67,
+      "conf": "CONMEBOL",
+      "matches": 18,
+      "is_host": false
+    },
+    "Uzbekistan": {
+      "gf": 1.2,
+      "ga": 0.8,
+      "conf": "AFC",
+      "matches": 10,
+      "is_host": false,
+      "_note": "AFC 3rd round: 12GF/10G. First World Cup."
+    }
   }
 }

@@ -368,6 +368,7 @@ function renderOne(data) {
         <span>${t('confidence')} <span class="stars">${conf}</span></span>
         <span class="lam">λ<sub>H</sub> ${mkt.home?.lambda?.toFixed(2)||'—'}</span>
         <span class="lam">λ<sub>A</sub> ${mkt.away?.lambda?.toFixed(2)||'—'}</span>
+        <span class="lam">${data.generated_at ? new Date(data.generated_at).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : ''}</span>
       </div>
       ${allRules.length?`<div class="rules">${allRules.join('')}</div>`:''}
     </div>
@@ -546,21 +547,17 @@ initUI();
 
 // ── Auto-load: try loading all *_output.json from same directory ──
 (async function autoLoad() {
-  // Try a small manifest of known files in this directory
   const KNOWN = [
-    'md3_L1_panama_england_output.json',
-    'md3_L2_croatia_ghana_output.json',
-    'md3_K1_colombia_portugal_output.json',
-    'md3_K2_drcongo_uzbekistan_output.json',
-    'md3_J1_jordan_argentina_output.json',
-    'md3_J2_algeria_austria_output.json',
+    'r32_08_england_drcongo_output.json',
+    'r32_09_belgium_senegal_output.json',
+    'r32_10_usa_bosnia_output.json',
   ];
   const loaded = [];
   for (const fn of KNOWN) {
     try {
       const r = await fetch(fn);
       if (r.ok) loaded.push(await r.json());
-    } catch(_) { /* file not available */ }
+    } catch(_) {}
   }
   if (loaded.length) {
     matches = loaded;

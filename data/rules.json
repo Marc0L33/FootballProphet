@@ -2,8 +2,8 @@
   "_meta": {
     "version": "1.0.0",
     "updated": "2026-06-26",
-    "total_rules": 20,
-    "active": 16,
+    "total_rules": 21,
+    "active": 17,
     "shadow_admission": ["r15_indoor", "r17_cross_conf", "r18_water_break"],
     "shadow_demoted": ["r04_red_card"],
     "notes": "Based on 52 incremental updates including MD3 six-match retrospective"
@@ -333,6 +333,19 @@
       "override": "r08_elite_defense is active AND triggers",
       "effect": "team_goals += delta * gamma",
       "exit_conditions": null
+    },
+    {
+      "id": "r22_knockout_decay",
+      "name": "淘汰赛压制",
+      "status": "active",
+      "priority": 4.5,
+      "type": "multiplier",
+      "description": "淘汰赛强队进攻系统性衰减。moneyline<1.50→GF×0.75。德国4球→实际1球、荷兰2球→实际1球。δ=-25%保守起步。",
+      "gamma": 0.65, "delta": 0.75, "sigma": 0.20,
+      "alpha": 6, "beta": 2, "n": 4,
+      "trigger": "match.stage == 'knockout' AND moneyline < 1.60 AND opponent_ga < 1.0",
+      "effect_tiers": {},
+      "exit_conditions": { "min_gamma": 0.40, "max_consecutive_wrong": 6 }
     }
   ],
   "priority_chain": "r05 > r10 > r14 > r12 > r16 > r17 > r15 > r18 > r19 > r13 > r11 > r09 > r08 > r07 > r06 > r04 > r02 > r03 > r01"
